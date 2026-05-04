@@ -32,13 +32,6 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname,"public")));
 app.set("view engine","ejs");
 
-// Session middleware configuration
-app.use(session({
-  secret: process.env.JWT_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false } // Set to true if using HTTPS
-}));
 
 app.use(cors());
 app.use(express.json());
