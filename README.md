@@ -1,6 +1,6 @@
 # 🚀 Bridgo
 
-![Bridgo Banner](public/images/logo.png)
+![Bridgo Banner](public/images/banner.png)
 
 <p align="center">
   <b>Bridging the gap between local vendors and suppliers through real-time auction systems</b>
