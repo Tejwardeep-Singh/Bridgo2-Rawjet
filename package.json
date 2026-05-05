@@ -4,7 +4,7 @@
   "description": "This is the solution project for hackathon",
   "main": "app.js",
   "scripts": {
-    "test": "run"
+    "start": "node app.js"
   },
   "author": "Team Global",
   "license": "ISC",
