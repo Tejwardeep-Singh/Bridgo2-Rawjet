@@ -1,0 +1,148 @@
+:root {
+    --accent-blue: #3b82f6;
+    --accent-green: #10b981;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --white: #ffffff;
+    --bg-light: #f8fafc;
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+main {
+    min-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at top, #f1f5f9 0%, var(--bg-light) 100%);
+    padding: 4rem 1rem;
+}
+
+.register-container {
+    background: var(--white);
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 800px; /* Wider for two-column layout */
+    border: 1px solid #e2e8f0;
+}
+
+.register-container h1 {
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.register-container .subtitle {
+    display: block;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+/* Two-Column Grid Logic */
+.registration-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Spanning full width for specific fields */
+.full-width {
+    grid-column: span 2;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-main);
+}
+
+.form-group input, 
+.form-group textarea {
+    padding: 0.75rem 1rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    outline: none;
+    font-family: inherit;
+}
+
+.form-group input:focus, 
+.form-group textarea:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.register-btn {
+    grid-column: span 2;
+    padding: 1rem;
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.register-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.login-link {
+    grid-column: span 2;
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-decoration: none;
+}
+
+.login-link:hover {
+    color: var(--accent-blue);
+    text-decoration: underline;
+}
+
+/* Supplier Theme Overrides */
+.supplier-mode h1 { color: var(--accent-green); }
+.supplier-mode .register-btn { background: var(--accent-green); }
+.supplier-mode input:focus, .supplier-mode textarea:focus { 
+    border-color: var(--accent-green); 
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+.supplier-mode .login-link:hover { color: var(--accent-green); }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .registration-form {
+        grid-template-columns: 1fr;
+    }
+    .full-width {
+        grid-column: span 1;
+    }
+    .register-btn {
+        grid-column: span 1;
+    }
+    .login-link {
+        grid-column: span 1;
+    }
+    .register-container {
+        padding: 2rem 1.5rem;
+    }
+}
