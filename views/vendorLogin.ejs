@@ -23,8 +23,8 @@
             <div class="nav-right">
                 <ul class="nav-menu">
                     <li><a href="/">Home</a></li>
-                    <li><a href="/vendor/login" class="active">Vendor</a></li>
-                    <li><a href="/supplier/login">Supplier</a></li>
+                    <!-- <li><a href="/vendor/login" class="active">Vendor</a></li>
+                    <li><a href="/supplier/login">Supplier</a></li> -->
                 </ul>
             </div>
             <div class="hamburger">
@@ -37,37 +37,24 @@
 
     <!-- Main Content -->
     <main>
-        <div class="login-container">
-            <h1>Vendor Login</h1>
-            <form action="/vendor/login" method="POST">
-                <div class="form-group">
-                    <label for="vendorId">Vendor ID</label>
-                    <input type="text" id="vendorId" name="vendorId" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button class="login-btn" type="submit">Login</button>
-            </form>
-            <a class="register-link" href="/vendor/register">Don't have an account? Register here</a>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <a href="/">Home</a>
-                <a href="/vendor/login">Vendor Login</a>
-                <a href="/supplier/login">Supplier Login</a>
+    <!-- Added 'vendor-login-container' class -->
+    <div class="login-container vendor-login-container">
+        <h1>Vendor Login</h1>
+        <form action="/vendor/login" method="POST">
+            <div class="form-group">
+                <label for="vendorId">Vendor ID</label>
+                <input type="text" id="vendorId" name="vendorId" required>
             </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Team Global. All rights reserved.</p>
-        </div>
-    </footer>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button class="login-btn" type="submit">Login</button>
+        </form>
+        <a class="register-link" href="/vendor/register">Don't have an account? Register here</a>
+    </div>
+</main>
+    
 
     <script>
         // Mobile menu toggle

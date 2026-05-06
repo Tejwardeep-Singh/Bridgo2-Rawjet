@@ -24,8 +24,8 @@
             <div class="nav-right">
                 <ul class="nav-menu">
                     <li><a href="/">Home</a></li>
-                    <li><a href="/vendor/login">Vendor</a></li>
-                    <li><a href="/supplier/login" class="active">Supplier</a></li>
+                    <!-- <li><a href="/vendor/login">Vendor</a></li>
+                    <li><a href="/supplier/login" class="active">Supplier</a></li> -->
                 </ul>
             </div>
             <div class="hamburger">
@@ -38,37 +38,26 @@
 
     <!-- Main Content -->
     <main>
-        <div class="login-container">
-            <h2>Supplier Login</h2>
-            <form action="/supplier/login" method="POST">
-                <div class="form-group">
-                    <label for="loginId">Login ID</label>
-                    <input type="text" id="loginId" name="loginId" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button class="login-btn supplier-login-btn" type="submit">Login</button>
-            </form>
-            <a class="register-link supplier-register-link" href="/supplier/register">Don't have an account? Register here</a>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <a href="/">Home</a>
-                <a href="/vendor/login">Vendor Login</a>
-                <a href="/supplier/login">Supplier Login</a>
+    <!-- Added 'supplier-login-container' class -->
+    <div class="login-container supplier-login-container">
+        <h2>Supplier Login</h2>
+        <form action="/supplier/login" method="POST">
+            <div class="form-group">
+                <label for="loginId">Login ID</label>
+                <!-- Added 'supplier-form-input' class -->
+                <input type="text" id="loginId" name="loginId" class="supplier-form-input" required>
             </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Team Global. All rights reserved.</p>
-        </div>
-    </footer>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="supplier-form-input" required>
+            </div>
+            <button class="login-btn supplier-login-btn" type="submit">Login</button>
+        </form>
+        <a class="register-link supplier-register-link" href="/supplier/register">Don't have an account? Register here</a>
+    </div>
+</main>
+
+    
 
     <script>
         // Mobile menu toggle
