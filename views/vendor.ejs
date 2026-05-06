@@ -8,427 +8,8 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
     <link rel="manifest" href="/favicon/site.webmanifest">
     <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/dashboard.css">
     <title>Vendor Dashboard - Bridgo</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f4f8fb;
-            min-height: 100vh;
-        }
-        
-        /* Navigation Bar */
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .nav-left {
-            display: flex;
-            align-items: center;
-        }
-        
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: white;
-        }
-        
-        .nav-logo img {
-            height: 40px;
-            width: auto;
-            margin-right: 10px;
-            object-fit: contain;
-        }
-        
-
-        
-        .nav-right {
-            display: flex;
-            align-items: center;
-        }
-        
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-            align-items: center;
-        }
-        
-        .nav-menu li a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            transition: background 0.3s;
-        }
-        
-        .nav-menu li a:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .nav-menu li a.active {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-        }
-        
-        .hamburger span {
-            width: 25px;
-            height: 3px;
-            background: white;
-            margin: 3px 0;
-            transition: 0.3s;
-        }
-        
-        /* Main Content */
-        main {
-            height: auto;
-        }
-        .dashboard-container {
-            width: 80vw;
-            margin: 40px auto;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 24px rgba(46, 134, 222, 0.08);
-            padding: 2.5rem 2rem 2rem 2rem;
-            position: relative;
-        }
-        .dashboard-header {
-            text-align: center;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-        .dashboard-header h1 {
-            color: #2e86de;
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-        }
-        .logout-btn {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: #e74c3c;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            padding: 8px 18px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s;
-            text-decoration: none;
-        }
-        .logout-btn:hover {
-            background: #c0392b;
-        }
-        .vendor-info {
-            background: #eaf2fb;
-            border-radius: 8px;
-            padding: 1.2rem 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .vendor-info h2 {
-            color: #2e86de;
-            font-size: 1.3rem;
-            margin-bottom: 0.7rem;
-        }
-        .vendor-info p {
-            margin: 0.3rem 0;
-            color: #333;
-            font-size: 1rem;
-        }
-        .dashboard-actions {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-            max-width: 100%;
-        }
-        .action-btn {
-            background: #2e86de;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            padding: 0.9rem 1.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            text-decoration: none;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(46, 134, 222, 0.08);
-            white-space: nowrap;
-            min-width: fit-content;
-        }
-        .action-btn:hover {
-            background: #1b4f72;
-        }
-        
-        /* Footer */
-        .footer {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            padding: 1rem 0;
-        }
-        
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-        
-        .footer-section {
-            text-align: center;
-        }
-        
-        .footer-section h3 {
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-        
-        .footer-section a {
-            color: white;
-            text-decoration: none;
-            display: block;
-            margin-bottom: 0.3rem;
-            transition: color 0.3s;
-        }
-        
-        .footer-section a:hover {
-            color: #3498db;
-        }
-        
-        .footer-bottom {
-            text-align: center;
-            padding: 0.5rem 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 1rem;
-        }
-        
-        .footer-bottom p {
-            color: #bdc3c7;
-            font-size: 0.9rem;
-        }
-        
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 1rem;
-            }
-            
-            .nav-container {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .nav-menu {
-                flex-direction: column;
-                gap: 1rem;
-                width: 100%;
-            }
-            
-            .nav-menu li {
-                width: 100%;
-                text-align: center;
-            }
-            
-            .nav-menu li a {
-                display: block;
-                padding: 0.8rem;
-            }
-            
-            .hamburger {
-                display: flex;
-                position: absolute;
-                top: 1rem;
-                right: 1rem;
-            }
-            
-            .nav-menu {
-                display: none;
-            }
-            
-            .nav-menu.active {
-                display: flex;
-            }
-            
-            .dashboard-container {
-                max-width: 98vw;
-                padding: 16px 6vw 18px 6vw;
-                margin: 20px auto;
-            }
-            
-            .dashboard-header h1 {
-                font-size: 1.4rem;
-            }
-            
-            .dashboard-header p {
-                font-size: 1rem;
-            }
-            
-            .vendor-info {
-                padding: 12px 8px;
-                font-size: 0.98rem;
-            }
-            
-            .dashboard-actions {
-                flex-direction: column;
-                gap: 12px;
-                align-items: stretch;
-                padding: 0 10px;
-            }
-            
-            .dashboard-actions a {
-                width: 100%;
-                font-size: 0.95rem;
-                padding: 12px 16px;
-                text-align: center;
-            }
-            
-            .logout-btn {
-                top: -60%;
-                right:-5%;
-                padding: 4px 8px;
-                font-size: 0.95rem;
-            }
-            
-            .footer-container {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .dashboard-container {
-                padding: 12px 4vw 16px 4vw;
-            }
-            
-            .dashboard-header h1 {
-                font-size: 1.2rem;
-            }
-            
-            .dashboard-actions {
-                gap: 10px;
-                padding: 0 5px;
-            }
-            
-            .dashboard-actions a {
-                font-size: 0.9rem;
-                padding: 10px 12px;
-            }
-        }
-        
-        /* Dark Mode Styles */
-        .dark-mode-toggle {
-            background: none;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            font-size: 1.7rem;
-            margin-left: 18px;
-            color: #fff;
-            border-radius: 50%;
-            transition: background 0.2s, color 0.2s;
-            padding: 6px 10px;
-        }
-        
-        .dark-mode-toggle:hover {
-            background: rgba(255,255,255,0.15);
-            color: #ffe066;
-        }
-        
-        body.dark-mode {
-            background: #181c24;
-            color: #f1f1f1;
-        }
-        
-        body.dark-mode .dashboard-container {
-            background: #232a36;
-            color: #f1f1f1;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.25);
-        }
-        
-        body.dark-mode .dashboard-header h1 {
-            color: #ffe066;
-        }
-        
-        body.dark-mode .vendor-info {
-            background: #232a36;
-            color: #f1f1f1;
-        }
-        
-        body.dark-mode .vendor-info h2 {
-            color: #ffe066;
-        }
-        
-        body.dark-mode .vendor-info p {
-            color: #f1f1f1;
-        }
-        
-        body.dark-mode .vendor-info p strong {
-            color: #ffe066;
-        }
-        
-        body.dark-mode .action-btn {
-            background: #34495e;
-            color: #ffe066;
-        }
-        
-        body.dark-mode .action-btn:hover {
-            background: #232a36;
-            color: #fff;
-        }
-        
-        body.dark-mode .logout-btn {
-            background: #ffe066;
-            color: #232a36;
-        }
-        
-        body.dark-mode .logout-btn:hover {
-            background: #ffd700;
-            color: #181c24;
-        }
-        
-        body.dark-mode .footer {
-            background: linear-gradient(135deg, #181c24 0%, #232a36 100%);
-            color: #ffe066;
-        }
-        
-        body.dark-mode .footer-section a {
-            color: #ffe066;
-        }
-        
-        body.dark-mode .footer-section a:hover {
-            color: #fff;
-        }
-    </style>
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -442,8 +23,8 @@
             <div class="nav-right">
                 <ul class="nav-menu">
                     <li><a href="/">Home</a></li>
-                    <li><a href="/vendor/login" class="active">Vendor</a></li>
-                    <li><a href="/supplier/login">Supplier</a></li>
+                    <!-- <li><a href="/vendor/login" class="active">Vendor</a></li>
+                    <li><a href="/supplier/login">Supplier</a></li> -->
                 </ul>
                 <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode">
                     <span id="darkModeIcon">🌙</span>
@@ -459,53 +40,37 @@
 
     <!-- Main Content -->
     <main>
-        <div class="dashboard-container">
-        <div class="dashboard-header">
-            <a href="/vendor/logout" class="logout-btn">Logout</a>
-            <h1>Welcome, <%= vendor && vendor.name ? vendor.name : "Vendor" %>!</h1>
-            <p>Your Vendor Dashboard</p>
-        </div>
-        <div class="vendor-info">
-            <h2>Vendor Information</h2>
-            <% if (vendor) { %>
-                <p><strong>Vendor ID:</strong> <%= vendor.vendorId %></p>
-                <p><strong>Name:</strong> <%= vendor.name %></p>
-                <p><strong>Email:</strong> <%= vendor.email %></p>
-                <p><strong>Phone:</strong> <%= vendor.phone %></p>
-                <p><strong>Address:</strong>
-                    <%= vendor.address %>
-                    <% if (vendor.area) { %>, <%= vendor.area %><% } %>
-                    <% if (vendor.city) { %>, <%= vendor.city %><% } %>
-                    <% if (vendor.state) { %>, <%= vendor.state %><% } %>
-                </p>
-            <% } else { %>
-                <p>Vendor information not available.</p>
-            <% } %>
-        </div>
-        <div class="dashboard-actions">
-            <a href="/vendor/live-auctions" class="action-btn">🔴 Live Auctions</a>
-            <a href="/vendor/auction/join" class="action-btn">Ask Requirements</a>
-            <a href="/vendor/my-requirements" class="action-btn">📋 My Requirements</a>
-            <a href="/vendor/create-auction" class="action-btn">🏢 Create Vendor Auction</a>
-            <a href="/vendor/my-auctions" class="action-btn">📊 My Vendor Auctions</a>
-        </div>
-    </div>
-        </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <a href="/">Home</a>
-                <a href="/vendor/login">Vendor Login</a>
-                <a href="/supplier/login">Supplier Login</a>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-text">
+                <h1>Vendor Dashboard</h1>
+                <p>Hello, <%= vendor.name %>!</p>
             </div>
+            <a href="/vendor/logout" class="logout-btn">Logout</a>
+        </header>
+
+        <section class="info-card">
+            <h2>🏪 Stall Information</h2>
+            <div class="info-grid">
+                <div class="info-item"><label>Vendor ID</label><span><%= vendor.vendorId %></span></div>
+                <div class="info-item"><label>Phone</label><span><%= vendor.phone %></span></div>
+                <div class="info-item"><label>Location</label><span><%= vendor.city %>, <%= vendor.state %></span></div>
+            </div>
+        </section>
+
+        <nav class="dashboard-actions">
+            <a href="/vendor/live-auctions" class="action-btn">🔴 Live Auctions</a>
+            <a href="/vendor/auction/join" class="action-btn">➕ Ask Requirements</a>
+            <a href="/vendor/my-requirements" class="action-btn">📋 My Requirements</a>
+            <a href="/vendor/create-auction" class="action-btn">🏢 Create Auction</a>
+            <a href="/vendor/my-auctions" class="action-btn">📊 My Auctions</a>
+        </nav>
+    </div>
+</main>
+
+    <div class="footer-bottom">
+            <p>&copy; 2026 Team Rawjet. All rights reserved.</p>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Team Global. All rights reserved.</p>
-        </div>
-    </footer>
 
     <script>
         // Mobile menu toggle
