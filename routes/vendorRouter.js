@@ -146,7 +146,7 @@ router.get("/join-auction/:auctionId", async (req, res) => {
         }
         
         // Render the live auction page with vendor session data
-        res.render("liveAuction", { auction, vendor: req.session.vendor, supplier: null, isSupplierOwner: false });
+        res.render("liveAuction", { auction, vendor: req.session.vendor, supplier: null, isSupplierOwner: false },moment);
     } catch (err) {
         res.status(500).send("Error joining auction: " + err.message);
     }
@@ -171,7 +171,7 @@ router.get("/live-auction/:auctionId", async (req, res) => {
         }
         
         // Render the live auction page with vendor session data
-        res.render("liveAuction", { auction, vendor: req.session.vendor, supplier: null, isSupplierOwner: false });
+        res.render("liveAuction", { auction, vendor: req.session.vendor, supplier: null, isSupplierOwner: false },moment);
     } catch (err) {
         res.status(500).send("Error fetching auction: " + err.message);
     }
@@ -273,7 +273,8 @@ router.get("/auction/join", async (req, res) => {
             auctions: relevantAuctions, 
             vendor: req.session.vendor,
             success: req.query.success,
-            error: req.query.error
+            error: req.query.error,
+            moment
         });
     } catch (err) {
         res.status(500).send("Error fetching auctions: " + err.message);
