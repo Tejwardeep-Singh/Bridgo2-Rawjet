@@ -370,3 +370,139 @@ body {
         padding: 60px 1.5rem;
     }
 }
+
+
+/* --- Benefits Section --- */
+.benefits-section {
+    padding: 100px 1.5rem;
+    background-color: #f8fafc; /* Subtle contrast from the white section above */
+}
+
+.benefits-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+}
+
+.benefits-content {
+    flex: 1;
+}
+
+.badge {
+    background: #eff6ff;
+    color: #3b82f6;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.benefits-content h2 {
+    font-size: 2.8rem;
+    margin-top: 1.5rem;
+    color: #0f172a;
+    line-height: 1.2;
+}
+
+.highlight {
+    color: #3b82f6;
+    position: relative;
+}
+
+.benefits-content p {
+    color: #64748b;
+    margin: 1.5rem 0 2.5rem 0;
+    font-size: 1.1rem;
+}
+
+.benefit-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.benefit-item {
+    display: flex;
+    gap: 1rem;
+}
+
+.benefit-check {
+    width: 28px;
+    height: 28px;
+    background: #3b82f6;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.benefit-item h4 {
+    color: #1e293b;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.benefit-item p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #64748b;
+}
+
+/* Stats Visual Box */
+.benefits-visual {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.stats-card {
+    background: white;
+    padding: 3rem;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    border: 1px solid #f1f5f9;
+    width: 100%;
+    max-width: 350px;
+}
+
+.stat h3 {
+    font-size: 2.5rem;
+    color: #0f172a;
+    margin-bottom: 0.25rem;
+}
+
+.stat p {
+    margin: 0;
+    color: #3b82f6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .benefits-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 3rem;
+    }
+    
+    .benefit-item {
+        text-align: left;
+    }
+    
+    .benefits-content h2 {
+        font-size: 2.2rem;
+    }
+}
