@@ -41,6 +41,11 @@
     <!-- Added 'supplier-login-container' class -->
     <div class="login-container supplier-login-container">
         <h2>Supplier Login</h2>
+        <% if (typeof error !== 'undefined') { %>
+    <div class="error-message">
+        <%= error %>
+    </div>
+<% } %>
         <form action="/supplier/login" method="POST">
             <div class="form-group">
                 <label for="loginId">Login ID</label>

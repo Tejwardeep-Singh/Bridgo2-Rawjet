@@ -40,6 +40,11 @@
     <!-- Added 'vendor-login-container' class -->
     <div class="login-container vendor-login-container">
         <h1>Vendor Login</h1>
+        <% if (typeof error !== 'undefined') { %>
+    <div class="error-message">
+        <%= error %>
+    </div>
+<% } %>
         <form action="/vendor/login" method="POST">
             <div class="form-group">
                 <label for="vendorId">Vendor ID</label>

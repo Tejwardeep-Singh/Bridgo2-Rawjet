@@ -142,3 +142,14 @@ main {
         padding: 2rem 1.5rem;
     }
 }
+
+.error-message {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: 500;
+}
