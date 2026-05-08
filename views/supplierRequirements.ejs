@@ -594,6 +594,9 @@
                     <li><a href="/">Home</a></li>
                     <!-- <li><a href="/vendor/login">Vendor</a></li>
                     <li><a href="/supplier/login" class="active">Supplier</a></li> -->
+                    <li><button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode">
+                    <span id="darkModeIcon">🌙</span>
+                </button></li>
                 </ul>
             </div>
             <div class="hamburger">
@@ -609,9 +612,7 @@
             <div class="header">
                 <h1>📋 Vendor Requirements</h1>
                 <p>Welcome, <strong><%= supplier.name %></strong>! View and respond to vendor requirements.</p>
-                <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode">
-                    <span id="darkModeIcon">🌙</span>
-                </button>
+                
             </div>
             
             <a href="/supplier" class="dashboard-btn">
