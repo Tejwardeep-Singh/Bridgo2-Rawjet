@@ -5,6 +5,7 @@ const Vendor = require("../models/vendorDetails");
 const Stock = require("../models/stock");
 const Requirement = require("../models/requirement");
 const VendorAuction = require("../models/vendorAuction");
+const Order = require("../models/Order");
 const moment = require("moment-timezone");
 
 
@@ -672,5 +673,159 @@ router.get("/response/:responseId", async (req, res) => {
     }
 
 });
+
+router.get("/accept-offer/:responseId", async (req, res) => {
+
+    try {
+
+        if (!req.session.vendor) {
+            return res.redirect("/vendor/login");
+        }
+
+        const requirement = await Requirement.findOne({
+            "supplierResponses._id": req.params.responseId
+        });
+
+        if (!requirement) {
+            return res.status(404).send("Requirement not found");
+        }
+
+        const selectedResponse =
+            requirement.supplierResponses.id(req.params.responseId);
+
+        if (!selectedResponse) {
+            return res.status(404).send("Response not found");
+        }
+
+        // Prevent duplicate acceptance
+        if (selectedResponse.responseStatus === "accepted") {
+            return res.send("Offer already accepted");
+        }
+
+        // Update all responses
+        requirement.supplierResponses.forEach(response => {
+
+            if (response._id.toString() === req.params.responseId) {
+
+                response.responseStatus = "accepted";
+
+            } else {
+
+                response.responseStatus = "rejected";
+
+            }
+
+        });
+
+        requirement.status = "in_progress";
+
+        await requirement.save();
+
+        // CREATE ORDER
+        const order = new Order({
+
+            vendorId: requirement.vendorId,
+
+            vendorName: requirement.vendorName,
+
+            supplierId: selectedResponse.supplierId,
+
+            supplierName: selectedResponse.supplierName,
+
+            requirementId: requirement._id,
+
+            responseId: selectedResponse._id,
+
+            itemName: requirement.itemName,
+
+            quantity: selectedResponse.proposedQuantity,
+
+            amount: selectedResponse.proposedPrice,
+
+            orderStatus: "created",
+
+            paymentStatus: "pending"
+
+        });
+
+        await order.save();
+
+        res.redirect("/vendor/orders");
+
+    } catch (err) {
+
+        console.log(err);
+        console.error(err);
+
+        res.status(500).send("Server Error");
+
+    }
+
+});
+router.get("/reject-offer/:responseId", async (req, res) => {
+
+    try {
+
+        if (!req.session.vendor) {
+            return res.redirect("/vendor/login");
+        }
+
+        const requirement = await Requirement.findOne({
+            "supplierResponses._id": req.params.responseId
+        });
+
+        if (!requirement) {
+            return res.status(404).send("Requirement not found");
+        }
+
+        const response =
+            requirement.supplierResponses.id(req.params.responseId);
+
+        if (!response) {
+            return res.status(404).send("Response not found");
+        }
+
+        response.responseStatus = "rejected";
+
+        await requirement.save();
+
+        res.redirect("/vendor/my-requirements");
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).send("Server Error");
+
+    }
+
+});
+router.get("/orders", async (req, res) => {
+
+    try {
+
+        if (!req.session.vendor) {
+            return res.redirect("/vendor/login");
+        }
+
+        const orders = await Order.find({
+            vendorId: req.session.vendor.vendorId
+        }).sort({ createdAt: -1 });
+
+        res.render("vendorOrders", {
+            vendor: req.session.vendor,
+            orders
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).send("Server Error");
+
+    }
+
+});
+
 module.exports = router;
 module.exports.updateAuctionStatus = updateAuctionStatus

@@ -179,7 +179,20 @@ body{
     font-weight:700;
     margin-top:10px;
 }
+.accepted-status {
+    color: #16a34a;
+    font-weight: 700;
+}
 
+.rejected-status {
+    color: #dc2626;
+    font-weight: 700;
+}
+
+.pending-status {
+    color: #d97706;
+    font-weight: 700;
+}
 @media(max-width:768px){
 
     .details-grid{
@@ -199,3 +212,37 @@ body{
         text-align:center;
     }
 }
+
+#orderh1{
+    margin-bottom:30px;
+    color:#4f46e5;
+}
+
+.orders-grid{
+    display:grid;
+    gap:20px;
+}
+
+.order-card{
+    background:white;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.08);
+}
+
+.detail{
+    margin-bottom:10px;
+}
+
+.status{
+    font-weight:700;
+}
+
+.pending{
+    color:#d97706;
+}
+
+.paid{
+    color:#16a34a;
+}
+

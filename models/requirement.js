@@ -60,8 +60,7 @@ const requirementSchema = new mongoose.Schema({
 
         {
             supplierId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Supplier"
+                type: String
             },
 
             supplierName: String,

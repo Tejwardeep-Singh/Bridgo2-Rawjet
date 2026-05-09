@@ -43,6 +43,23 @@
                 Review supplier details and proceed with your order securely.
             </p>
         </div>
+        <div class="detail-item">
+            <span class="label">Offer Status</span>
+
+            <span class="
+                <%= response.responseStatus === 'accepted'
+                    ? 'accepted-status'
+                    : response.responseStatus === 'rejected'
+                    ? 'rejected-status'
+                    : 'pending-status'
+                %>
+            ">
+
+                <%= response.responseStatus.toUpperCase() %>
+
+            </span>
+
+        </div>
 
         <!-- Grid -->
         <div class="details-grid">
@@ -159,21 +176,52 @@
             </div>
 
             <div class="actions">
+                <% if (response.responseStatus === "pending") { %>
 
-                <a href="/vendor/accept-offer/<%= response._id %>" class="btn btn-accept">
-                    Accept Offer
-                </a>
+                    <a href="/vendor/accept-offer/<%= response._id %>"
+                    class="btn btn-accept">
 
-                <a href="/vendor/reject-offer/<%= response._id %>" class="btn btn-reject">
-                    Reject Offer
-                </a>
+                        Accept Offer
 
-                <a href="tel:<%= response.phone %>" class="btn btn-contact">
+                    </a>
+
+                    <a href="/vendor/reject-offer/<%= response._id %>"
+                    class="btn btn-reject">
+
+                        Reject Offer
+
+                    </a>
+
+                <% } %>
+
+                <% if (response.responseStatus === "accepted") { %>
+
+                    <button class="btn btn-accept" disabled>
+                        Offer Accepted
+                    </button>
+
+                <% } %>
+
+                <% if (response.responseStatus === "rejected") { %>
+
+                    <button class="btn btn-reject" disabled>
+                        Offer Rejected
+                    </button>
+
+                <% } %>
+
+                <a href="tel:<%= response.supplierPhone %>"
+                class="btn btn-contact">
+
                     Contact Supplier
+
                 </a>
 
-                <a href="/vendor/my-requirements" class="btn btn-back">
+                <a href="/vendor/my-requirements"
+                class="btn btn-back">
+
                     Back
+
                 </a>
 
             </div>
