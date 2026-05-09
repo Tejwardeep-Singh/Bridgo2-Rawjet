@@ -427,14 +427,27 @@ router.post("/respond-requirement", async (req, res) => {
         
         // Add supplier response
         requirement.supplierResponses.push({
-            supplierId: req.session.supplier.supplierId,
-            supplierName: req.session.supplier.name,
-            supplierPhone: req.session.supplier.phone,
-            supplierEmail: req.session.supplier.email,
-            message,
-            proposedPrice: parsedPrice,
-            proposedQuantity: parsedQuantity
-        });
+        supplierId: req.session.supplier.supplierId,
+
+        supplierName: req.session.supplier.name,
+
+        supplierPhone: req.session.supplier.phone,
+
+        supplierEmail: req.session.supplier.email,
+
+        supplierLocation:
+            req.session.supplier.city ||
+            req.session.supplier.address ||
+            "Not Available",
+
+        message,
+
+        proposedPrice: parsedPrice,
+
+        proposedQuantity: parsedQuantity,
+
+        responseTime: new Date()
+    });
         
         await requirement.save();
         

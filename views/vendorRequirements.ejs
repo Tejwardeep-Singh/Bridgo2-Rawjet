@@ -566,6 +566,28 @@
         .status-approved {
         color: #28a745;
         }
+        .response-link {
+    text-decoration: none;
+    display: block;
+}
+
+.response-item {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.response-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    background: #f1f8ff;
+}
+
+.view-details-btn {
+    margin-top: 12px;
+    color: #1976d2;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
 
     </style>
 </head>
@@ -631,9 +653,8 @@
                                     </div>
                                     <div class="detail-item">
                                         <span class="detail-label">Status:</span>
-                                            <span class="detail-value <%= requirement.status === 'pending' ? 'status-pending' : 'status-approved' %>">
-                                                <%= requirement.status %>
-                                            </span>
+
+                                        <span class="detail-value <%= requirement.status === 'pending' ? 'status-pending' : 'status-approved' %>">
                                             <%= requirement.status.charAt(0).toUpperCase() + requirement.status.slice(1) %>
                                         </span>
                                     </div>
@@ -645,15 +666,27 @@
                                             <h4>Supplier Responses (<%= requirement.supplierResponses.length %>)</h4>
                                         </div>
                                         <% requirement.supplierResponses.forEach(response => { %>
+                                            <a href="/vendor/response/<%= response._id %>" class="response-link">
                                             <div class="response-item">
                                                 <div class="response-header">
-                                                    <span class="response-supplier"><%= response.supplierName %></span>
-                                                    <span class="response-time"><%= new Date(response.responseTime).toLocaleString() %></span>
+                                                    <span class="response-supplier">
+                                                        <%= response.supplierName %>
+                                                    </span>
+
+                                                    <span class="response-time">
+                                                        <%= new Date(response.responseTime).toLocaleString() %>
+                                                    </span>
                                                 </div>
+
                                                 <div class="response-content">
                                                     <%= response.message %>
                                                 </div>
+
+                                                <div class="view-details-btn">
+                                                    View Details →
+                                                </div>
                                             </div>
+                                            </a>
                                         <% }); %>
                                     </div>
                                 <% } else { %>

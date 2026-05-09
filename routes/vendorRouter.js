@@ -630,6 +630,47 @@ router.get("/update-auction-status", async (req, res) => {
         res.status(500).json({ success: false, error: err.message });
     }
 });
+router.get("/response/:responseId", async (req, res) => {
 
+    try {
+
+        if (!req.session.vendor) {
+            return res.redirect("/vendor/login");
+        }
+
+        const requirement = await Requirement.findOne({
+            "supplierResponses._id": req.params.responseId
+        });
+
+        if (!requirement) {
+            return res.status(404).send("Response not found");
+        }
+
+        const response =
+            requirement.supplierResponses.id(req.params.responseId);
+
+        if (!response) {
+            return res.status(404).send("Supplier response not found");
+        }
+
+        res.render("responseDetails", {
+
+            vendor: req.session.vendor,
+
+            requirement,
+
+            response
+
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.status(500).send("Server Error");
+
+    }
+
+});
 module.exports = router;
 module.exports.updateAuctionStatus = updateAuctionStatus
