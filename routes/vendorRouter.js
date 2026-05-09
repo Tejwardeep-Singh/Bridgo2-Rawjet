@@ -5,7 +5,7 @@ const Vendor = require("../models/vendorDetails");
 const Stock = require("../models/stock");
 const Requirement = require("../models/requirement");
 const VendorAuction = require("../models/vendorAuction");
-const Order = require("../models/Order");
+const Order = require("../models/order");
 const moment = require("moment-timezone");
 
 
