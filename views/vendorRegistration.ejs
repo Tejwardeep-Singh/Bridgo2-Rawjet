@@ -157,31 +157,7 @@
 
     <script>
 
-const locations = {
-
-    punjab:[
-        "amritsar",
-        "ludhiana",
-        "jalandhar",
-        "mohali"
-    ],
-
-    haryana:[
-        "gurgaon",
-        "faridabad",
-        "panipat"
-    ],
-
-    chandigarh:[
-        "chandigarh"
-    ],
-
-    delhi:[
-        "new delhi",
-        "north delhi",
-        "south delhi"
-    ]
-};
+const locations = <%- JSON.stringify(locations) %>;
 
 const stateSelect =
 document.getElementById("state");
