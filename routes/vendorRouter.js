@@ -6,7 +6,9 @@ const Stock = require("../models/stock");
 const Requirement = require("../models/requirement");
 const VendorAuction = require("../models/vendorAuction");
 const Order = require("../models/order");
+const Notification = require("../models/notification");
 const razorpay = require("../config/razorpay");
+const locations = require("../config/locations");
 const moment = require("moment-timezone");
 
 
@@ -61,7 +63,7 @@ router.post("/login", async (req, res) => {
 
 router.post("/register", async (req, res) => {
     try {
-        const { vendorId,name, password, email, phone, gst, address, area, city, state } = req.body;
+        const { vendorId,name, password, email, phone, gst, address, area, city, state,longitude,latitude } = req.body;
 
         // Create a new Vendor instance
         const newVendor = new Vendor({
@@ -74,7 +76,17 @@ router.post("/register", async (req, res) => {
             address,
             area,
             city,
-            state
+            state,
+            location:{
+                type:"Point",
+
+                coordinates:[
+
+                    parseFloat(longitude) || 0,
+
+                    parseFloat(latitude) || 0
+                ]
+            }
         });
 
         // Save the vendor to the database
@@ -101,7 +113,10 @@ router.get("/login", (req, res) => {
     res.render("vendorLogin");
 });
 router.get("/register", (req, res) => {
-    res.render("vendorRegistration");
+
+res.render("vendorRegistration",{
+    locations
+});
 });
 router.get("/", async (req, res) => {
     if (!req.session.vendor) {
@@ -367,6 +382,7 @@ router.post("/submit-requirement", async (req, res) => {
         });
         
         await newRequirement.save();
+        
         
 
         

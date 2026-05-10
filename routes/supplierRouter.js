@@ -4,6 +4,8 @@ const Stock = require("../models/stock");
 const Supplier = require("../models/supplierDetails");
 const Requirement = require("../models/requirement");
 const VendorAuction = require("../models/vendorAuction");
+const Notification = require("../models/notification");
+const locations = require("../config/locations");
 const { uploadSupplier} = require("../config/cloudinaryupload");
 
 // Supplier login route
@@ -40,7 +42,7 @@ router.post("/login", async (req, res) => {
 
 router.post("/register", async (req, res) => {
     try {
-        const { supplierId, name,password, email, phone, gst, address, area, city, state } = req.body;
+        const { supplierId, name,password, email, phone, gst, address, area, city, state,longitude,latitude } = req.body;
         const newSupplier = new Supplier({
             supplierId,
             name,
@@ -51,7 +53,17 @@ router.post("/register", async (req, res) => {
             address,
             area,
             city,
-            state
+            state,
+            location:{
+                type:"Point",
+
+                coordinates:[
+
+                    parseFloat(longitude) || 0,
+
+                    parseFloat(latitude) || 0
+                ]
+            }
         });
         await newSupplier.save();
         res.redirect("/supplier/login");
@@ -348,7 +360,10 @@ router.get("/login", (req, res) => {
     res.render("supplierLogin");
 });
 router.get("/register", (req, res) => {
-    res.render("supplierRegistration");
+
+res.render("supplierRegistration",{
+    locations
+});
 });
 router.get("/", (req, res) => {
     if (!req.session.supplier) {

@@ -356,19 +356,85 @@
                     <label for="address">Full Business Address</label>
                     <textarea id="address" name="address" rows="2" placeholder="Street, Landmark, etc." required></textarea>
                 </div>
+                <div class="form-group full-width">
+                    <label for="state">
+
+                        State
+
+                    </label>
+
+                    <select
+                        id="state"
+                        name="state"
+                        required
+                    >
+
+                        <option value="">
+                            Select State
+                        </option>
+
+                        <% Object.keys(locations).forEach(state=>{ %>
+
+                            <option
+                                value="<%= state.toLowerCase() %>"
+                            >
+
+                                <%= state %>
+
+                            </option>
+
+                        <% }) %>
+
+                    </select>
+
+                </div>
+                <div class="form-group">
+                    <label for="city">
+
+                        City
+
+                    </label>
+
+                    <select
+                        id="city"
+                        name="city"
+                        required
+                    >
+
+                        <option value="">
+                            Select City
+                        </option>
+
+                    </select>
+
+                </div>
                 <div class="form-group">
                     <label for="area">Area of Supply</label>
                     <input type="text" id="area" name="area" placeholder="e.g. Model Town" required>
                 </div>
-                <div class="form-group">
-                    <label for="city">City</label>
-                    <input type="text" id="city" name="city" required>
-                </div>
                 <div class="form-group full-width">
-                    <label for="state">State</label>
-                    <input type="text" id="state" name="state" required>
+                    <button
+                        type="button"
+                        id="detectLocationBtn"
+                        class="location-btn"
+                    >
+
+                        📍 Detect My Location
+
+                    </button>
+                    <input
+                        type="hidden"
+                        name="latitude"
+                        id="latitude"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="longitude"
+                        id="longitude"
+                    >
+
                 </div>
-                
                 <button class="register-btn" type="submit">Register as Supplier</button>
                 <a class="login-link" href="/supplier/login">Already have an account? Login here</a>
             </form>
@@ -376,7 +442,56 @@
     </main>
 
     
+    <script>
+        const locations = <%- JSON.stringify(locations) %>;
+        console.log(locations);
 
+const stateSelect =
+document.getElementById("state");
+
+const citySelect =
+document.getElementById("city");
+
+stateSelect.addEventListener(
+    "change",
+    ()=>{
+
+        const selectedState =
+            stateSelect.value;
+
+        citySelect.innerHTML =
+        `
+        <option value="">
+            Select City
+        </option>
+        `;
+
+        if(locations[selectedState]){
+
+            locations[selectedState]
+            .forEach(city=>{
+
+                const option =
+                document.createElement(
+                    "option"
+                );
+
+                option.value = city;
+
+                option.textContent =
+                    city.charAt(0)
+                    .toUpperCase() +
+                    city.slice(1);
+
+                citySelect.appendChild(
+                    option
+                );
+            });
+        }
+    }
+);
+
+</script>
     <script>
         // Mobile menu toggle
         const hamburger = document.querySelector('.hamburger');
