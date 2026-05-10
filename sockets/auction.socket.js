@@ -1,26 +1,82 @@
 module.exports = (io) => {
+
   io.on("connection", (socket) => {
 
-    socket.on("joinAuction", (auctionId) => {
-      socket.join(`auction_${auctionId}`);
-    });
+    console.log(
+      "User Connected:",
+      socket.id
+    );
 
-    socket.on("leaveAuction", (auctionId) => {
-      socket.leave(`auction_${auctionId}`);
-    });
+   
 
-    socket.on("placeBid", (data) => {
-      const { auctionId, bidAmount } = data;
+    socket.on(
+      "joinUserRoom",
+      (userId) => {
 
-      io.to(`auction_${auctionId}`).emit("newBid", {
-        bidAmount,
-        timestamp: new Date()
-      });
-    });
+        socket.join(userId);
 
-    socket.on("disconnect", () => {
-      // optional
-    });
+        console.log(
+          `User joined room: ${userId}`
+        );
+      }
+    );
+
+   
+
+    socket.on(
+      "joinAuction",
+      (auctionId) => {
+
+        socket.join(
+          `auction_${auctionId}`
+        );
+      }
+    );
+
+    socket.on(
+      "leaveAuction",
+      (auctionId) => {
+
+        socket.leave(
+          `auction_${auctionId}`
+        );
+      }
+    );
+
+   
+
+    socket.on(
+      "placeBid",
+      (data) => {
+
+        const {
+          auctionId,
+          bidAmount
+        } = data;
+
+        io.to(
+          `auction_${auctionId}`
+        ).emit(
+          "newBid",
+          {
+            bidAmount,
+            timestamp:new Date()
+          }
+        );
+      }
+    );
+
+   
+
+    socket.on(
+      "disconnect",
+      () => {
+
+        console.log(
+          "User disconnected"
+        );
+      }
+    );
 
   });
 };

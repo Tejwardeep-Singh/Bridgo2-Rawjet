@@ -298,6 +298,7 @@ router.post("/place-bid", async (req, res) => {
             });
         }
         
+        
         res.json({ success: true, currentBid: bidAmount });
     } catch (err) {
         res.status(500).json({ error: "Error placing bid: " + err.message });

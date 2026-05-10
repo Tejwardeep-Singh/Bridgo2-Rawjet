@@ -28,6 +28,49 @@
                     <li><button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode">
                     <span id="darkModeIcon">🌙</span>
                 </button></li>
+                <div class="notification-wrapper">
+
+    <button
+        id="notificationBtn"
+        class="notification-btn"
+    >
+
+        🔔
+
+        <span
+            id="notificationCount"
+            class="notification-count"
+        >
+            0
+        </span>
+
+    </button>
+
+
+    <div
+        id="notificationPanel"
+        class="notification-panel"
+    >
+
+        <div class="notification-header">
+            Notifications
+        </div>
+
+
+        <div
+            id="notificationList"
+            class="notification-list"
+        >
+
+            <div class="empty-notification">
+                No notifications yet
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
                 </ul>
             </div>
             <div class="hamburger">
@@ -64,7 +107,37 @@
             <a href="/supplier/auction/stock" class="organise">🔨 Organise Auction</a>
             <a href="/supplier/vendor-auctions" class="organise">🏢 Vendor Auctions</a>
         </nav>
+        <section class="live-notifications-section">
+
+    <div class="section-header">
+
+        <h2>
+            🔔 Live Notifications
+        </h2>
+
+        <span>
+            Realtime auction activity
+        </span>
+
     </div>
+
+    <div
+        id="liveNotificationStack"
+        class="live-notification-stack"
+    >
+
+        <div class="empty-feed">
+
+            No activity yet
+
+        </div>
+
+    </div>
+
+</section>
+    </div>
+
+    
 </main>
 
     <!-- Footer -->
@@ -72,6 +145,7 @@
             <p>&copy; 2026 Team Rawjet. All rights reserved.</p>
         </div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script>
         // Mobile menu toggle
         const hamburger = document.querySelector('.hamburger');
@@ -104,6 +178,142 @@
             setDarkMode(enabled);
             localStorage.setItem('darkMode', enabled);
         });
+        const socket = io();
+
+socket.emit(
+  "joinUserRoom",
+  "<%= supplier.supplierName%>"
+);
+const notificationBtn =
+// TOGGLE PANEL
+
+notificationBtn.addEventListener(
+    "click",
+    ()=>{
+
+        notificationPanel
+        .classList
+        .toggle("active");
+
+        unreadCount = 0;
+
+        notificationCount.textContent =
+        unreadCount;
+    }
+);
+
+
+// SOCKET LISTENER
+
+socket.on(
+    "newNotification",
+    (data)=>{
+
+        unreadCount++;
+
+        notificationCount.textContent =
+        unreadCount;
+
+
+        const emptyMessage =
+        document.querySelector(
+            ".empty-notification"
+        );
+
+        if(emptyMessage){
+            emptyMessage.remove();
+        }
+
+
+        const notificationItem =
+        document.createElement("div");
+
+        notificationItem.classList.add(
+            "notification-item"
+        );
+
+
+        notificationItem.innerHTML =
+        `
+        <div class="notification-title">
+            ${data.title}
+        </div>
+
+        <div class="notification-message">
+            ${data.message}
+        </div>
+
+        <div class="notification-time">
+            Just now
+        </div>
+        `;
+
+
+        notificationList.prepend(
+            notificationItem
+        );
+
+
+        console.log(data);
+    }
+);
+const liveStack =
+document.getElementById(
+    "liveNotificationStack"
+);
+
+socket.on(
+    "newNotification",
+    (data)=>{
+
+        const emptyFeed =
+        document.querySelector(
+            ".empty-feed"
+        );
+
+        if(emptyFeed){
+
+            emptyFeed.remove();
+        }
+
+        const card =
+        document.createElement("div");
+
+        card.classList.add(
+            "live-feed-card"
+        );
+
+        card.innerHTML =
+        `
+        <div class="feed-left">
+
+            <div class="feed-icon">
+                🔔
+            </div>
+
+            <div class="feed-content">
+
+                <h3>
+                    ${data.title}
+                </h3>
+
+                <p>
+                    ${data.message}
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="feed-time">
+            Just now
+        </div>
+        `;
+
+        liveStack.prepend(card);
+    }
+);
+
     </script>
 </body>
 </html>

@@ -3,20 +3,14 @@ const mongoose = require("mongoose");
 const notificationSchema =
 new mongoose.Schema({
 
-    userType:{
-
-        type:String,
-
-        enum:[
-            "vendor",
-            "supplier"
-        ],
-
+    userId:{
+        type:mongoose.Schema.Types.ObjectId,
         required:true
     },
 
-    userId:{
+    userType:{
         type:String,
+        enum:["vendor","supplier"],
         required:true
     },
 
@@ -30,19 +24,15 @@ new mongoose.Schema({
         required:true
     },
 
-    link:{
-        type:String
+    isRead:{
+        type:Boolean,
+        default:false
     },
 
-    isRead:{
-
-        type:Boolean,
-
-        default:false
+    createdAt:{
+        type:Date,
+        default:Date.now
     }
-
-},{
-    timestamps:true
 });
 
 module.exports =
