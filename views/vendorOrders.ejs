@@ -117,20 +117,39 @@
 
                             <div class="detail">
 
-                                <span class="label">
-                                    Payment
-                                </span>
+    <span class="label">
+        Payment
+    </span>
 
-                                <span class="
-                                    badge
-                                    <%= order.paymentStatus %>
-                                ">
+    <span class="
+        badge
+        <%= order.paymentStatus %>
+    ">
 
-                                    <%= order.paymentStatus %>
+        <%= order.paymentStatus %>
 
-                                </span>
+    </span>
 
-                            </div>
+</div>
+
+<% if(order.paymentStatus === "pending"){ %>
+
+    <button
+        class="pay-btn"
+        onclick="payNow(
+            '<%= order._id %>',
+            '<%= order.amount %>'
+        )">
+
+        <span class="pay-icon">
+            🔒
+        </span>
+
+        Secure Payment
+
+    </button>
+
+<% } %>
 
                             <div class="detail">
 
@@ -178,6 +197,59 @@
     <div class="footer-bottom">
             <p>&copy; 2026 Team Rawjet. All rights reserved.</p>
         </div>
+        <script>
 
+async function payNow(orderId, amount){
+
+    const response = await fetch(
+        `/vendor/create-payment/${orderId}`,
+        {
+            method:"POST"
+        }
+    );
+
+    const data = await response.json();
+
+    if(!data.success){
+        alert("Payment Failed");
+        return;
+    }
+
+    const options = {
+
+        key:data.key,
+
+        amount:data.order.amount,
+
+        currency:"INR",
+
+        name:"Bridgo",
+
+        description:"Supplier Payment",
+
+        order_id:data.order.id,
+
+        handler: async function(response){
+
+            await fetch(
+                `/vendor/payment-success/${orderId}`,
+                {
+                    method:"POST"
+                }
+            );
+
+            alert("Payment Successful");
+
+            window.location.reload();
+        }
+    };
+
+    const rzp = new Razorpay(options);
+
+    rzp.open();
+}
+
+</script>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </body>
 </html>

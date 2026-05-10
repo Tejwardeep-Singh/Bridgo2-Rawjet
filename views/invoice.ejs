@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/orders.css">
+    <link rel="stylesheet" href="/stylesheets/invoice.css">
+    <title>Invoice | Bridgo</title>
+
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="/" class="nav-logo">
+                    <img src="/images/logo.png" alt="Bridgo Logo">
+                </a>
+            </div>
+            <div class="nav-right">
+                <ul class="nav-menu">
+                    <li><a href="/">Home</a></li>
+                    <!-- <li><a href="/vendor/login" class="active">Vendor</a></li>
+                    <li><a href="/supplier/login">Supplier</a></li> -->
+                </button>
+                </ul>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+    <div class="invoice-container">
+
+        <!-- HEADER -->
+        <div class="invoice-header">
+
+            <div class="header-top">
+
+                <div class="brand">
+
+                    <h1>Bridgo</h1>
+
+                    <p>
+                        B2B Procurement Marketplace
+                    </p>
+
+                </div>
+
+                <div class="invoice-badge">
+
+                    <h2>INVOICE</h2>
+
+                    <p>
+                        #INV-<%= order._id.toString().slice(-6).toUpperCase() %>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BODY -->
+        <div class="invoice-body">
+
+            <!-- INFO -->
+            <div class="info-grid">
+
+                <!-- Vendor -->
+                <div class="info-card">
+
+                    <h3>Vendor Details</h3>
+
+                    <div class="info-item">
+                        <span class="label">Vendor</span>
+
+                        <span class="value">
+                            <%= order.vendorName %>
+                        </span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="label">Vendor ID</span>
+
+                        <span class="value">
+                            <%= order.vendorId %>
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- Supplier -->
+                <div class="info-card">
+
+                    <h3>Supplier Details</h3>
+
+                    <div class="info-item">
+                        <span class="label">Supplier</span>
+
+                        <span class="value">
+                            <%= order.supplierName %>
+                        </span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="label">Supplier ID</span>
+
+                        <span class="value">
+                            <%= order.supplierId %>
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                <%= order.itemName %>
+                            </td>
+
+                            <td>
+                                <%= order.quantity %>
+                            </td>
+
+                            <td>
+                                ₹ <%= order.amount %>
+                            </td>
+
+                            <td>
+                                <%= order.orderStatus %>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- SUMMARY -->
+            <div class="summary">
+
+                <div class="summary-row">
+
+                    <span>Subtotal</span>
+
+                    <span>
+                        ₹ <%= order.amount %>
+                    </span>
+
+                </div>
+
+                <div class="summary-row">
+
+                    <span>Platform Fee</span>
+
+                    <span>
+                        ₹ <%= Math.round(order.amount * 0.02) %>
+                    </span>
+
+                </div>
+
+                <div class="summary-row">
+
+                    <span>GST</span>
+
+                    <span>
+                        ₹ <%= Math.round(order.amount * 0.18 * 0.02) %>
+                    </span>
+
+                </div>
+
+                <div class="summary-row summary-total">
+
+                    <span>Total Paid</span>
+
+                    <span>
+                        ₹
+                        <%= order.amount +
+                            Math.round(order.amount * 0.02) +
+                            Math.round(order.amount * 0.18 * 0.02)
+                        %>
+                    </span>
+
+                </div>
+
+                <div class="paid-badge">
+
+                    Payment:
+                    <%= order.paymentStatus.toUpperCase() %>
+
+                </div>
+
+            </div>
+
+            <!-- FOOTER -->
+            <div class="invoice-footer">
+
+                <div class="note">
+
+                    Generated on
+                    <%= new Date(order.createdAt)
+                        .toLocaleString() %>
+
+                </div>
+
+                <button
+                    onclick="window.print()"
+                    class="download-btn">
+
+                    Download Invoice
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+    <div class="footer-bottom">
+            <p>&copy; 2026 Team Rawjet. All rights reserved.</p>
+        </div>
+
+</body>
+</html>

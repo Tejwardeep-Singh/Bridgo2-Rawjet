@@ -6,6 +6,7 @@ const Stock = require("../models/stock");
 const Requirement = require("../models/requirement");
 const VendorAuction = require("../models/vendorAuction");
 const Order = require("../models/order");
+const razorpay = require("../config/razorpay");
 const moment = require("moment-timezone");
 
 
@@ -825,6 +826,79 @@ router.get("/orders", async (req, res) => {
 
     }
 
+});
+router.post("/create-payment/:orderId", async (req, res) => {
+
+    try {
+
+        const order =
+            await Order.findById(req.params.orderId);
+
+        if(!order){
+            return res.status(404).json({
+                success:false
+            });
+        }
+
+        const options = {
+
+            amount: order.amount * 100,
+
+            currency: "INR",
+
+            receipt:
+                `receipt_${order._id}`
+
+        };
+
+        const razorpayOrder =
+            await razorpay.orders.create(options);
+
+        res.json({
+
+            success:true,
+
+            order: razorpayOrder,
+
+            key: process.env.RAZORPAY_KEY_ID
+
+        });
+
+    } catch(err){
+
+        console.log(err);
+
+        res.status(500).json({
+            success:false
+        });
+    }
+});
+router.post("/payment-success/:orderId", async (req, res) => {
+
+    try {
+
+        await Order.findByIdAndUpdate(
+
+            req.params.orderId,
+
+            {
+                paymentStatus:"paid",
+                orderStatus:"processing"
+            }
+        );
+
+        res.json({
+            success:true
+        });
+
+    } catch(err){
+
+        console.log(err);
+
+        res.status(500).json({
+            success:false
+        });
+    }
 });
 
 module.exports = router;
