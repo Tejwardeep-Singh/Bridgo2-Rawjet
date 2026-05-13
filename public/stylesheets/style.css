@@ -55,6 +55,7 @@ body {
     display: flex;
     list-style: none;
     gap: 1.5rem;
+    align-items: center;
 }
 
 .nav-menu li a {
@@ -518,3 +519,56 @@ body {
         font-size: 2.2rem;
     }
 }   
+
+
+
+
+/* --- Dark Mode Variables --- */
+body.dark-mode {
+    --bg-light: #0f172a;
+    --white: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* Specific Dark Mode Overrides */
+body.dark-mode .navbar {
+    background:#FFFFFF;
+    border-bottom: 1px solid #334155;
+}
+
+body.dark-mode .how-it-works, 
+body.dark-mode .benefits-section {
+    background: #0f172a;
+}
+
+body.dark-mode .feature-card, 
+body.dark-mode .stats-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3, 
+body.dark-mode h4 {
+    color: #f8fafc;
+}
+
+/* Toggle Button Styling */
+.dark-mode-toggle {
+    background: none;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px 10px;
+    border-radius: 8px;
+    margin-left: 1rem;
+    transition: all 0.3s ease;
+}
+
+body.dark-mode{
+    border-color: #334155;
+    background: #334155;
+}
