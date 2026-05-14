@@ -1,125 +1,236 @@
-# 🚀 Bridgo
-
-![Bridgo Banner](public/images/banner.png)
+# 🚀 Bridgo 2.0
 
 <p align="center">
-  <b>Bridging the gap between local vendors and suppliers through real-time auction systems</b>
+  <img src="public/images/banner.png" alt="Bridgo Banner" width="100%">
 </p>
 
+<h3 align="center">
+Bridging Local Vendors & Suppliers Through Real-Time Auctions
+</h3>
+
 <p align="center">
-  <img src="https://img.shields.io/badge/Node.js-18+-green?style=for-the-badge&logo=node.js" />
-  <img src="https://img.shields.io/badge/Express.js-Backend-black?style=for-the-badge&logo=express" />
-  <img src="https://img.shields.io/badge/MongoDB-Database-green?style=for-the-badge&logo=mongodb" />
-  <img src="https://img.shields.io/badge/Socket.IO-Realtime-blue?style=for-the-badge&logo=socket.io" />
-  <img src="https://img.shields.io/badge/EJS-Templating-orange?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Status-Active-success?style=for-the-badge" />
+  A scalable real-time marketplace platform inspired by traditional Indian mandi systems.
 </p>
 
 ---
 
-## 📌 Overview
+<p align="center">
 
-**Bridgo** is a real-time auction-based marketplace inspired by traditional Indian *mandi systems*.
-It connects **local street vendors** with **suppliers**, enabling them to trade goods efficiently through live bidding and direct requirement matching.
+<img src="https://img.shields.io/badge/Node.js-18+-green?style=for-the-badge&logo=node.js" />
+<img src="https://img.shields.io/badge/Express.js-Backend-black?style=for-the-badge&logo=express" />
+<img src="https://img.shields.io/badge/MongoDB-Database-green?style=for-the-badge&logo=mongodb" />
+<img src="https://img.shields.io/badge/Socket.IO-Realtime-blue?style=for-the-badge&logo=socket.io" />
+<img src="https://img.shields.io/badge/EJS-Frontend-orange?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Cloudinary-Media-blueviolet?style=for-the-badge" />
+<img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Status-Active-success?style=for-the-badge" />
 
----
-
-## 💡 Core Concept
-
-Bridgo introduces two powerful auction modes:
-
-### 🟢 Buy Auction (Vendor-driven)
-
-* Vendors request goods
-* Suppliers compete by offering the **lowest price**
-* Best deal wins
-
-### 🔵 Sell Auction (Supplier-driven)
-
-* Suppliers list products
-* Vendors compete by offering the **highest price**
-* Highest bidder wins
+</p>
 
 ---
 
-## ✨ Features
+# 📌 Overview
 
-### 👨‍🌾 Vendors
+**Bridgo 2.0** is a full-stack real-time auction platform that connects local street vendors with suppliers through live bidding systems, requirement matching, and location-aware commerce.
 
-* Submit product requirements
-* Create and manage auctions
-* Participate in live bidding
-* View active and past auctions
+The platform modernizes traditional procurement systems by introducing:
 
-### 🚚 Suppliers
+* Real-time auctions
+* Live bidding
+* Vendor requirement management
+* Supplier competition
+* Location-based discovery
+* Real-time notifications
+* Geo-aware auction filtering
+
+---
+
+# 💡 Core Auction System
+
+Bridgo introduces two marketplace flows inspired by traditional Indian mandi systems.
+
+---
+
+## 🟢 Buy Auction (Vendor Driven)
+
+Vendors:
+
+* Create procurement requests
+* Specify quantity and requirements
+* Start auctions for suppliers
+
+Suppliers:
+
+* Compete by offering the **lowest price**
+* Respond directly to vendor requirements
+* Win based on best offers
+
+---
+
+## 🔵 Sell Auction (Supplier Driven)
+
+Suppliers:
 
 * List available stock
-* Create auctions for products
-* Compete in vendor auctions
-* Respond directly to vendor requirements
+* Create live auctions
 
-### ⚡ Platform Features
+Vendors:
 
-* Real-time bidding with **Socket.IO**
-* Auction scheduling (start & end time)
+* Participate in live bidding
+* Compete by placing the **highest bid**
+* Win based on auction price
+
+---
+
+# ✨ Features
+
+## 👨‍🌾 Vendor Features
+
+* Vendor authentication system
+* Create procurement auctions
+* Browse live supplier auctions
+* Participate in real-time bidding
+* Requirement submission system
+* Order management system
+* Location-based auction discovery
 * Live auction participation
-* Secure authentication using **JWT**
-* Image upload via **Cloudinary**
 
 ---
 
-## 🏗️ Tech Stack
+## 🚚 Supplier Features
 
-| Layer    | Technology           |
-| -------- | -------------------- |
-| Backend  | Node.js, Express.js  |
-| Database | MongoDB (Mongoose)   |
-| Realtime | Socket.IO            |
-| Auth     | JWT, bcrypt          |
-| Frontend | EJS, CSS, JavaScript |
-| Storage  | Cloudinary           |
+* Supplier authentication system
+* Create stock auctions
+* Manage inventory listings
+* Respond to vendor requirements
+* Participate in vendor auctions
+* Real-time auction management
+* Auction scheduling system
 
 ---
 
-## 📂 Project Structure
+## ⚡ Platform Features
+
+* Real-time bidding using Socket.IO
+* Live notifications system
+* Auction scheduling engine
+* Auto auction state transitions
+* Dynamic location filtering
+* Area & city based auction discovery
+* Cloudinary image uploads
+* Responsive dashboard UI
+* Session-based authentication
+* Real-time auction synchronization
+
+---
+
+# 🌍 Smart Location Architecture
+
+Bridgo 2.0 uses a scalable geo-aware architecture.
+
+The platform stores:
+
+* State
+* City
+* Area / locality
+* Latitude
+* Longitude
+
+This enables:
+
+* Local supplier discovery
+* Nearby auction filtering
+* City-wise auction segmentation
+* Scalable logistics support
+* Future delivery optimization
+
+---
+
+# 🧠 Real-Time System
+
+The platform uses Socket.IO powered room architecture.
+
+## Auction Rooms
+
+Used for:
+
+* Live bidding
+* Bid updates
+* Auction events
+
+## User Rooms
+
+Used for:
+
+* Personal notifications
+* Realtime alerts
+* Auction updates
+
+---
+
+# 🏗️ Tech Stack
+
+| Layer            | Technology             |
+| ---------------- | ---------------------- |
+| Backend          | Node.js, Express.js    |
+| Database         | MongoDB + Mongoose     |
+| Frontend         | EJS, CSS, JavaScript   |
+| Realtime Engine  | Socket.IO              |
+| Authentication   | Express Sessions       |
+| Media Storage    | Cloudinary             |
+| Deployment Ready | Render / Railway / VPS |
+
+---
+
+# 📂 Project Structure
 
 ```bash
 Bridgo/
+│
 ├── app.js
-├── config/
-├── controllers/
-├── models/
 ├── routes/
+├── models/
 ├── views/
 ├── public/
+├── sockets/
+├── services/
+├── config/
+├── middleware/
 └── uploads/
 ```
 
 ---
 
-## ⚙️ Installation & Setup
+# ⚙️ Installation & Setup
 
-### 1️⃣ Clone Repository
+## 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/ryukgod26/Bridgo.git
+git clone https://github.com/Tejwardeep-Singh/Bridgo2-Rawjet
+
 cd Bridgo
 ```
 
-### 2️⃣ Install Dependencies
+---
+
+## 2️⃣ Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 3️⃣ Configure Environment
+---
 
-Create `.env` file:
+## 3️⃣ Configure Environment Variables
+
+Create a `.env` file in the root directory.
 
 ```env
-MONGODB_URI=mongodb://localhost:27017/bridgo
-JWT_KEY=your_secret_key
+MONGO_URI=your_mongodb_uri
+
 PORT=5000
+
+SESSION_SECRET=your_session_secret
 
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
@@ -128,15 +239,15 @@ CLOUDINARY_API_SECRET=your_api_secret
 
 ---
 
-### 4️⃣ Run Application
+## 4️⃣ Start Application
 
-#### Development:
+### Development Mode
 
 ```bash
 npx nodemon app.js
 ```
 
-#### Production:
+### Production Mode
 
 ```bash
 node app.js
@@ -144,65 +255,104 @@ node app.js
 
 ---
 
-### 🌐 Access App
+# 🌐 Access Application
 
+```txt
+https://bridgo2-rawjet.onrender.com/
 ```
-http://localhost:5000
+
+---
+
+# 🔄 Auction Workflow
+
+```txt
+Supplier/Vendor creates auction
+            ↓
+Auction becomes live
+            ↓
+Users join auction room
+            ↓
+Realtime bids are placed
+            ↓
+Socket.IO broadcasts updates
+            ↓
+Auction ends automatically
+            ↓
+Winner is determined
+            ↓
+Notifications are triggered
 ```
 
 ---
 
-## 🔄 Auction Workflow
+# 📸 Core System Highlights
 
-1. User creates auction (Buy/Sell)
-2. Auction goes live at scheduled time
-3. Participants place bids in real-time
-4. System determines winner automatically
-5. Results displayed instantly
-
----
-
-## ⚠️ Known Limitations (V1)
-
-* Limited auction lifecycle control
-* Basic real-time handling
-* No rating/trust system
-* UI not fully optimized for mobile
-
-👉 These are being improved in **Bridgo V2**
+✅ Real-time bidding engine
+✅ Dual auction architecture
+✅ Live notifications
+✅ Location-aware filtering
+✅ Session authentication
+✅ Responsive dashboards
+✅ Dynamic auction lifecycle
+✅ Supplier-vendor interaction system
 
 ---
 
-## 🚀 Future Enhancements (V2 Vision)
+# 🚀 Bridgo 2.0 Vision
 
-* Advanced auction engine (auto state transitions)
-* Notification system (outbid alerts, results)
-* Ratings & verification system
-* Mobile-first UI
-* Analytics dashboard
+Upcoming upgrades include:
+
+* AI-based supplier recommendations
+* Push notifications
+* WhatsApp alerts
+* Interactive analytics dashboard
+* Delivery & logistics tracking
+* Auction insights & reports
+* Ratings & trust system
+* Mobile-first UI redesign
+* Progressive Web App support
 
 ---
 
-## 🤝 Contributing
+# 🤝 Contributing
 
-Contributions are welcome!
-Feel free to fork this repo and submit a PR.
+Contributions are welcome.
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit changes
+4. Push to branch
+5. Open Pull Request
 
 ---
 
-## 📜 License
+# 📜 License
 
 This project is licensed under the MIT License.
 
+You are free to:
+
+* Use
+* Modify
+* Distribute
+* Contribute
+
+under MIT terms.
+
 ---
 
-## 👨‍💻 Author
+# 👨‍💻 Author
 
-**Tejwardeep Singh**
+## Tejwardeep Singh
+
 B.Tech CSE (2024–2028)
+
+* Full Stack Developer
+* Real-Time Systems Enthusiast
+* Building scalable marketplace systems
 
 ---
 
 <p align="center">
-  ⭐ If you like this project, consider giving it a star!
+  ⭐ If you found this project useful, consider starring the repository.
 </p>
