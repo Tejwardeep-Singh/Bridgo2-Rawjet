@@ -74,7 +74,9 @@ router.post("/register", async (req, res) => {
             phone,
             gst,
             address,
-            area,
+            area: area
+            ? area.toLowerCase().trim()
+            : "",
             city,
             state,
             location:{

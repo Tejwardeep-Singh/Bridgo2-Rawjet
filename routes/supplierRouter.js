@@ -51,7 +51,9 @@ router.post("/register", async (req, res) => {
             phone,
             gst,
             address,
-            area,
+            area: area
+            ? area.toLowerCase().trim()
+            : "",
             city,
             state,
             location:{
@@ -74,7 +76,7 @@ router.post("/register", async (req, res) => {
 router.post("/auction/auctions", uploadSupplier.single("image"), async (req, res) => {
     try {
 
-        const {
+        let {
             name,
             basePrice,
             quantity,
@@ -82,6 +84,21 @@ router.post("/auction/auctions", uploadSupplier.single("image"), async (req, res
             city,
             state
         } = req.body;
+
+        area =
+        area
+        ? area.toLowerCase().trim()
+        : "not specified";
+
+        city =
+        city
+        ? city.toLowerCase().trim()
+        : "not specified";
+
+        state =
+        state
+        ? state.toLowerCase().trim()
+        : "not specified";
 
         // Get supplier name and id from session if available
         let supplierName = "";
