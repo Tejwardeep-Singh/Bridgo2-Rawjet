@@ -128,20 +128,119 @@ router.get("/", async (req, res) => {
 });
 
 // Route to view all live auctions
-router.get("/live-auctions", async (req, res) => {
+router.get(
+"/live-auctions",
+
+async (req, res) => {
+
     try {
+
         if (!req.session.vendor) {
-            return res.redirect("/vendor/login");
+
+            return res.redirect(
+                "/vendor/login"
+            );
         }
-        
-        const liveAuctions = await Stock.find({ isLive: true });
-        res.render("vendorLiveAuctions", { 
-            auctions: liveAuctions, 
-            vendor: req.session.vendor 
+
+
+        // GET ALL LIVE AUCTIONS
+
+        const liveAuctions =
+        await Stock.find({
+            isLive:true
         });
+
+
+        // VENDOR LOCATION
+
+        const vendorArea =
+        req.session.vendor.area
+        ? req.session.vendor.area
+        .toLowerCase()
+        .trim()
+        : "";
+
+        const vendorCity =
+        req.session.vendor.city
+        ? req.session.vendor.city
+        .toLowerCase()
+        .trim()
+        : "";
+
+
+        // LOCAL AUCTIONS
+        // SAME AREA
+
+        const localAuctions =
+        liveAuctions.filter((auction)=>{
+
+            const supplierArea =
+            auction.area
+            ? auction.area
+            .toLowerCase()
+            .trim()
+            : "";
+
+            return (
+                supplierArea === vendorArea
+            );
+        });
+
+
+        // GLOBAL AUCTIONS
+        // SAME CITY
+        // DIFFERENT AREA
+
+        const globalAuctions =
+        liveAuctions.filter((auction)=>{
+
+            const supplierArea =
+            auction.area
+            ? auction.area
+            .toLowerCase()
+            .trim()
+            : "";
+
+            const supplierCity =
+            auction.city
+            ? auction.city
+            .toLowerCase()
+            .trim()
+            : "";
+
+            return (
+
+                supplierCity === vendorCity &&
+
+                supplierArea !== vendorArea
+            );
+        });
+
+
+        res.render(
+            "vendorLiveAuctions",
+            {
+
+                localAuctions,
+
+                globalAuctions,
+
+                vendor:req.session.vendor
+            }
+        );
+
     } catch (err) {
-        console.error("Error in live auctions route:", err);
-        res.status(500).send("Error fetching live auctions: " + err.message);
+
+        console.error(
+            "Error in live auctions route:",
+            err
+        );
+
+        res.status(500)
+        .send(
+            "Error fetching live auctions: "
+            + err.message
+        );
     }
 });
 

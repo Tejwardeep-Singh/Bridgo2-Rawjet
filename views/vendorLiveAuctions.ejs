@@ -679,19 +679,17 @@
                 </div>
             </div>
             
-            <% if (auctions && auctions.length > 0) { %>
+            <% if (
+            (localAuctions && localAuctions.length > 0) ||
+            (globalAuctions && globalAuctions.length > 0)
+            ) { %>
                 <!-- Local Auctions (Same City) -->
                 <div>
                     <h2 class="section-header local-header">
-                        🏠 Local Auctions (<%= vendor.city || 'Your City' %>)
+                        🏠 Local Auctions (<%= vendor.area || 'Your Area' %>)
                     </h2>
                     <div class="auctions-grid" id="local-auctions">
-                        <% 
-                        const localAuctions = auctions.filter(auction => 
-                            auction.supplierName && 
-                            auction.supplierName.toLowerCase().includes((vendor.city || '').toLowerCase())
-                        );
-                        %>
+                        
                         <% if (localAuctions.length > 0) { %>
                             <% localAuctions.forEach(function(auction) { %>
                                 <div class="auction-card" data-item-name="<%= auction.name.toLowerCase() %>">
@@ -764,17 +762,11 @@
                 <!-- Other Auctions (Different Cities) -->
                 <div>
                     <h2 class="section-header global-header">
-                        🌍 Other Auctions
+                        🌍 City Auctions (<%= vendor.city || 'Your City' %>)
                     </h2>
                     <div class="auctions-grid" id="other-auctions">
-                        <% 
-                        const otherAuctions = auctions.filter(auction => 
-                            !auction.supplierName || 
-                            !auction.supplierName.toLowerCase().includes((vendor.city || '').toLowerCase())
-                        );
-                        %>
-                        <% if (otherAuctions.length > 0) { %>
-                            <% otherAuctions.forEach(function(auction) { %>
+                        <% if (globalAuctions.length > 0) { %>
+                            <% globalAuctions.forEach(function(auction) { %>
                                 <div class="auction-card" data-item-name="<%= auction.name.toLowerCase() %>">
                                     <% if (auction.image) { %>
                                         <img class="auction-image" src="<%= auction.image %>" alt="<%= auction.name %>">
