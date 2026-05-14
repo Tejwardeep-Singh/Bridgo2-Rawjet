@@ -271,27 +271,88 @@ router.get("/join-auction/:auctionId", async (req, res) => {
 });
 
 // Vendor-specific live auction route
-router.get("/live-auction/:auctionId", async (req, res) => {
-    try {
-        if (!req.session.vendor) {
-            return res.redirect("/vendor/login");
+router.get(
+"/live-auction/:auctionId",
+
+async (req,res)=>{
+
+    try{
+
+        console.log(
+            "LIVE AUCTION ROUTE HIT"
+        );
+
+        console.log(
+            "Auction ID:",
+            req.params.auctionId
+        );
+
+
+        if(!req.session.vendor){
+
+            console.log(
+                "Vendor not logged in"
+            );
+
+            return res.redirect(
+                "/vendor/login"
+            );
         }
-        
-        const { auctionId } = req.params;
-        const auction = await Stock.findById(auctionId);
-        
-        if (!auction) {
-            return res.status(404).send("Auction not found");
+
+
+        const auction =
+        await Stock.findById(
+            req.params.auctionId
+        );
+
+
+        console.log(
+            "Auction Found:",
+            auction
+        );
+
+
+        if(!auction){
+
+            return res
+            .status(404)
+            .send(
+                "Auction not found"
+            );
         }
-        
-        if (!auction.isLive) {
-            return res.status(400).send("This auction is not live yet");
-        }
-        
-        // Render the live auction page with vendor session data
-        res.render("liveAuction", { auction, vendor: req.session.vendor, supplier: null, isSupplierOwner: false },moment);
-    } catch (err) {
-        res.status(500).send("Error fetching auction: " + err.message);
+
+
+        console.log(
+            "Rendering auction page"
+        );
+
+
+        res.render(
+            "liveAuction",
+            {
+                auction,
+
+                vendor:
+                req.session.vendor,
+
+                supplier:null,
+
+                isSupplierOwner:false,
+
+                moment
+            }
+        );
+
+    }catch(err){
+
+        console.log(
+            "LIVE AUCTION ERROR:"
+        );
+
+        console.log(err);
+
+        res.status(500)
+        .send(err.message);
     }
 });
 
