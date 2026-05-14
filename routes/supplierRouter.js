@@ -321,9 +321,45 @@ router.post("/place-bid", async (req, res) => {
         res.status(500).json({ error: "Error placing bid: " + err.message });
     }
 });
+async function updateStockAuctionStatus(){
 
+    try{
+
+        const now = new Date();
+
+        const endedAuctions =
+        await Stock.find({
+
+            isLive:true,
+
+            auctionEnd:{
+                $lte:now
+            }
+        });
+
+        for(const auction of endedAuctions){
+
+            auction.isLive = false;
+
+            auction.status = "ended";
+
+            // OPTIONAL:
+            // set winner here
+
+            await auction.save();
+        }
+
+    }catch(err){
+
+        console.log(
+            "Auction status update error:",
+            err
+        );
+    }
+}
 router.get("/auction/auctionsView", async (req, res) => {
     try {
+        await updateStockAuctionStatus();
         if (!req.session.supplier) {
             return res.redirect("/supplier");
         }
@@ -332,6 +368,7 @@ router.get("/auction/auctionsView", async (req, res) => {
         const auctions = await Stock.find({ supplierName: req.session.supplier.name });
         // Find all stock items for this supplier to populate the dropdown
         const stocks = await Stock.find({ supplierId: req.session.supplier.supplierId });
+        
 
         // For each auction, if it is ended and has bidders, attach winner details
         const auctionsWithWinner = auctions.map(auction => {
