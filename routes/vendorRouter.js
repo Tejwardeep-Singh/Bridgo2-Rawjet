@@ -724,10 +724,16 @@ router.get("/my-auctions", async (req, res) => {
             vendorId: req.session.vendor.vendorId 
         }).sort({ createdAt: -1 });
         
-        res.render("vendorMyAuctions", { 
-            auctions, 
-            vendor: req.session.vendor 
-        });
+        res.render(
+            "vendorMyAuctions",
+            { 
+                auctions,
+
+                vendor:req.session.vendor,
+
+                moment
+            }
+        );
     } catch (err) {
         res.status(500).send("Error fetching auctions: " + err.message);
     }
