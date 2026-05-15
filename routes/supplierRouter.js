@@ -6,6 +6,7 @@ const Requirement = require("../models/requirement");
 const VendorAuction = require("../models/vendorAuction");
 const Notification = require("../models/notification");
 const locations = require("../config/locations");
+const moment = require("moment-timezone");
 const { uploadSupplier} = require("../config/cloudinaryupload");
 
 // Supplier login route
@@ -611,7 +612,8 @@ router.get("/vendor-auctions", async (req, res) => {
 
         res.render("supplierVendorAuctions", {
             auctions: auctionsWithWinner,
-            supplier: req.session.supplier
+            supplier: req.session.supplier,
+            moment
         });
     } catch (err) {
         res.status(500).send("Error fetching vendor auctions: " + err.message);
@@ -638,7 +640,8 @@ router.get("/vendor-auction/:auctionId", async (req, res) => {
         
         res.render("supplierVendorAuction", { 
             auction, 
-            supplier: req.session.supplier 
+            supplier: req.session.supplier ,
+            moment
         });
     } catch (err) {
         res.status(500).send("Error loading auction: " + err.message);
