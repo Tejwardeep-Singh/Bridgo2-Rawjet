@@ -42,7 +42,8 @@ router.post("/login", async (req, res) => {
             address: vendor.address,
             area: vendor.area,
             city: vendor.city,
-            state: vendor.state
+            state: vendor.state,
+            location: vendor.location
         };
         
 
@@ -461,35 +462,35 @@ router.get("/auction/join", async (req, res) => {
 });
 
 // POST route to handle requirement submission from vendorJoinAuction.ejs
-router.post("/auction/join", async (req, res) => {
-    try {
-        if (!req.session.vendor) {
-            return res.redirect("/vendor/login");
-        }
-        const { itemName, requirement, quantity, other } = req.body;
-        if (!itemName || !requirement || !quantity) {
-            return res.redirect("/vendor/auction/join?error=missing_fields");
-        }
-        // Create new requirement for this vendor
-        const newRequirement = new Requirement({
-            vendorId: req.session.vendor.vendorId,
-            itemName,
-            requirement,
-            quantity,
-            other: other || '',
-            vendorName: req.session.vendor.name,
-            vendorCity: req.session.vendor.city,
-            vendorArea: req.session.vendor.area,
-            vendorPhone: req.session.vendor.phone,
-            vendorEmail: req.session.vendor.email,
-            vendorAddress: req.session.vendor.address
-        });
-        await newRequirement.save();
-        return res.redirect("/vendor/auction/join?success=true");
-    } catch (err) {
-        return res.redirect("/vendor/auction/join?error=" + encodeURIComponent(err.message));
-    }
-});
+// router.post("/auction/join", async (req, res) => {
+//     try {
+//         if (!req.session.vendor) {
+//             return res.redirect("/vendor/login");
+//         }
+//         const { itemName, requirement, quantity, other } = req.body;
+//         if (!itemName || !requirement || !quantity) {
+//             return res.redirect("/vendor/auction/join?error=missing_fields");
+//         }
+//         // Create new requirement for this vendor
+//         const newRequirement = new Requirement({
+//             vendorId: req.session.vendor.vendorId,
+//             itemName,
+//             requirement,
+//             quantity,
+//             other: other || '',
+//             vendorName: req.session.vendor.name,
+//             vendorCity: req.session.vendor.city,
+//             vendorArea: req.session.vendor.area,
+//             vendorPhone: req.session.vendor.phone,
+//             vendorEmail: req.session.vendor.email,
+//             vendorAddress: req.session.vendor.address,
+//         });
+//         await newRequirement.save();
+//         return res.redirect("/vendor/auction/join?success=true");
+//     } catch (err) {
+//         return res.redirect("/vendor/auction/join?error=" + encodeURIComponent(err.message));
+//     }
+// });
 
 // Route for creating auctions (placeholder)
 router.get("/auction/create", async (req, res) => {
@@ -537,12 +538,44 @@ router.post("/submit-requirement", async (req, res) => {
             vendorEmail: req.session.vendor.email,
             vendorAddress: finalAddress,
             itemName: itemName.toLowerCase().trim(),
-            city: req.session.vendor.city,
+            area:
+            req.session.vendor.area
+            ? req.session.vendor.area
+            .toLowerCase()
+            .trim()
+            : "",
+
+            city:
+            req.session.vendor.city
+            ? req.session.vendor.city
+            .toLowerCase()
+            .trim()
+            : "",
+
+            state:
+            req.session.vendor.state
+            ? req.session.vendor.state
+            .toLowerCase()
+            .trim()
+            : "",
+
+            location:{
+                type:"Point",
+
+                coordinates:[
+
+                    req.session.vendor.location
+                    .coordinates[0],
+
+                    req.session.vendor.location
+                    .coordinates[1]
+                ]
+            },
             requirement,
             quantity,
             other
         });
-        
+            
         await newRequirement.save();
         
         

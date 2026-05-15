@@ -49,7 +49,30 @@ const requirementSchema = new mongoose.Schema({
     additionalNotes: {
         type: String
     },
+    area:{
+    type:String
+},
 
+state:{
+    type:String
+},
+
+location:{
+
+    type:{
+        type:String,
+
+        enum:["Point"],
+
+        default:"Point"
+    },
+
+    coordinates:{
+        type:[Number],
+
+        required:true
+    }
+},
     status: {
         type: String,
         enum: ['pending', 'in_progress', 'completed', 'cancelled'],
@@ -102,5 +125,8 @@ const requirementSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+requirementSchema.index({
 
+    location:"2dsphere"
+});
 module.exports = mongoose.model('Requirement', requirementSchema);

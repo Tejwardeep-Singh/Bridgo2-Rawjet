@@ -24,7 +24,8 @@ router.post("/login", async (req, res) => {
             name: supplier.name || supplier.supplierId,
             email: supplier.email,
             phone: supplier.phone,
-            contact: supplier.contact
+            contact: supplier.contact,
+            location:supplier.location
         };
         
         // Explicitly save session
@@ -430,37 +431,140 @@ router.get("/", (req, res) => {
 
 // Route to view vendor requirements
 router.get("/requirements", async (req, res) => {
+
     try {
+
         if (!req.session.supplier) {
-            return res.redirect("/supplier/login");
+
+            return res.redirect(
+                "/supplier/login"
+            );
         }
 
-        // Get all stock items for this supplier
-        const supplierStocks = await Stock.find({
-            supplierId: req.session.supplier.supplierId
+
+        // GET SUPPLIER
+
+        const supplier =
+        await Supplier.findOne({
+
+            supplierId:
+            req.session.supplier.supplierId
         });
 
-        // Extract stock names and convert to lowercase for matching
-        const stockNames = supplierStocks.map(stock => stock.name.toLowerCase().trim());
 
-        // Find requirements that match supplier's stock items
-        const allRequirements = await Requirement.find({ status: 'pending' }).sort({ createdAt: -1 });
+        if (!supplier) {
 
-        // Match only item name, ignore city
-        const matchingRequirements = allRequirements.filter(requirement => {
-            if (!requirement.itemName) return false;
-            const requirementItemName = requirement.itemName.toLowerCase().trim();
-            return stockNames.some(stockName => stockName === requirementItemName);
+            return res
+            .status(404)
+            .send("Supplier not found");
+        }
+
+
+        // GET SUPPLIER STOCKS
+
+        const supplierStocks =
+        await Stock.find({
+
+            supplierId:
+            supplier.supplierId
         });
 
-        res.render("supplierRequirements", {
-            requirements: matchingRequirements,
-            supplier: req.session.supplier,
-            success: req.session.successMessage
+
+        // STOCK NAMES
+
+        const stockNames =
+        supplierStocks.map(stock =>
+
+            stock.name
+            .toLowerCase()
+            .trim()
+        );
+
+
+        // NEARBY REQUIREMENTS
+        // WITHIN 20KM
+
+        const nearbyRequirements =
+        await Requirement.find({
+
+            status: "pending",
+
+            location: {
+
+                $near: {
+
+                    $geometry: {
+
+                        type: "Point",
+
+                        coordinates:
+                        supplier.location.coordinates
+                    },
+
+                    $maxDistance: 20000
+                }
+            }
+
+        }).sort({
+
+            createdAt: -1
         });
-        req.session.successMessage = undefined;
+
+
+        // MATCH ITEMS
+
+        const matchingRequirements =
+        nearbyRequirements.filter(
+            requirement => {
+
+                if (!requirement.itemName) {
+
+                    return false;
+                }
+
+                const requirementItemName =
+                requirement.itemName
+                .toLowerCase()
+                .trim();
+
+                return stockNames.some(
+                    stockName =>
+
+                    stockName ===
+                    requirementItemName
+                );
+            }
+        );
+
+
+        res.render(
+            "supplierRequirements",
+            {
+
+                requirements:
+                matchingRequirements,
+
+                supplier:
+                req.session.supplier,
+
+                success:
+                req.session.successMessage
+            }
+        );
+
+
+        req.session.successMessage =
+        undefined;
+
     } catch (err) {
-        res.status(500).send("Error fetching requirements: " + err.message);
+
+        console.log(err);
+
+        res.status(500)
+        .send(
+            "Error fetching requirements: "
+            + err.message
+        );
     }
 });
 
