@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+
+    <link
+    rel="stylesheet"
+    href="/stylesheets/style.css">
+
+    <link
+    rel="stylesheet"
+    href="/stylesheets/dashboard.css">
+
+    <title>
+        Bridgo|Supplier|Edit Profile
+    </title>
+
+</head>
+
+<body>
+
+<div class="change-password-container">
+
+    <form
+    action="/supplier/edit-profile"
+    method="POST"
+    class="change-password-card">
+
+        <h1>
+            ✏️ Edit Supplier Profile
+        </h1>
+
+
+        <input
+        type="text"
+        name="name"
+        value="<%= supplier.name %>"
+        required>
+
+
+        <input
+        type="text"
+        name="phone"
+        value="<%= supplier.phone %>"
+        required>
+
+
+        <input
+        type="email"
+        name="email"
+        value="<%= supplier.email %>"
+        required>
+
+
+        <input
+        type="text"
+        name="address"
+        value="<%= supplier.address %>"
+        required>
+
+
+        <input
+        type="text"
+        name="area"
+        value="<%= supplier.area %>"
+        required>
+
+
+        <input
+        type="text"
+        name="city"
+        value="<%= supplier.city %>"
+        required>
+
+
+        <input
+        type="text"
+        name="state"
+        value="<%= supplier.state %>"
+        required>
+
+
+        <button type="submit">
+
+            Save Changes
+
+        </button>
+
+
+        <a
+        href="/supplier"
+        class="back-dashboard">
+
+            ← Back to Dashboard
+
+        </a>
+
+    </form>
+
+</div>
+
+</body>
+</html>

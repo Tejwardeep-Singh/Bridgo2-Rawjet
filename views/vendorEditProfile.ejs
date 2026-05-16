@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+
+    <link
+    rel="stylesheet"
+    href="/stylesheets/style.css">
+
+    <link
+    rel="stylesheet"
+    href="/stylesheets/dashboard.css">
+
+    <title>
+        Bridgo|Vendor|Edit Profile
+    </title>
+
+</head>
+
+<body>
+
+<div class="change-password-container">
+
+    <form
+    action="/vendor/edit-profile"
+    method="POST"
+    class="change-password-card">
+
+        <h1>
+            ✏️ Edit Vendor Profile
+        </h1>
+
+
+        <input
+        type="text"
+        name="name"
+        value="<%= vendor.name %>"
+        required>
+
+
+        <input
+        type="text"
+        name="phone"
+        value="<%= vendor.phone %>"
+        required>
+
+
+        <input
+        type="email"
+        name="email"
+        value="<%= vendor.email %>"
+        required>
+
+
+        <input
+        type="text"
+        name="address"
+        value="<%= vendor.address %>"
+        required>
+
+
+        <input
+        type="text"
+        name="area"
+        value="<%= vendor.area %>"
+        required>
+
+
+        <input
+        type="text"
+        name="city"
+        value="<%= vendor.city %>"
+        required>
+
+
+        <input
+        type="text"
+        name="state"
+        value="<%= vendor.state %>"
+        required>
+
+
+        <button type="submit">
+
+            Save Changes
+
+        </button>
+
+
+        <a
+        href="/vendor"
+        class="back-dashboard">
+
+            ← Back to Dashboard
+
+        </a>
+
+    </form>
+
+</div>
+
+</body>
+</html>

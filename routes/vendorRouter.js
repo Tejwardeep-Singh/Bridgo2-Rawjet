@@ -1321,6 +1321,146 @@ async(req,res)=>{
         .send(err.message);
     }
 });
+router.get(
+"/edit-profile",
+
+async(req,res)=>{
+
+    try{
+
+        if(!req.session.vendor){
+
+            return res.redirect(
+                "/vendor/login"
+            );
+        }
+
+
+        const vendor =
+        await Vendor.findOne({
+
+            vendorId:
+            req.session.vendor.vendorId
+        });
+
+
+        res.render(
+            "vendorEditProfile",
+            {
+                vendor
+            }
+        );
+
+    }catch(err){
+
+        res.status(500)
+        .send(err.message);
+    }
+});
+router.post(
+"/edit-profile",
+
+async(req,res)=>{
+
+    try{
+
+        if(!req.session.vendor){
+
+            return res.redirect(
+                "/vendor/login"
+            );
+        }
+
+
+        const {
+
+            name,
+            phone,
+            email,
+            address,
+            area,
+            city,
+            state
+
+        } = req.body;
+
+
+        const updatedVendor =
+        await Vendor.findOneAndUpdate(
+
+            {
+                vendorId:
+                req.session.vendor.vendorId
+            },
+
+            {
+                name,
+                phone,
+                email,
+                address,
+
+                area:
+                area.toLowerCase().trim(),
+
+                city:
+                city.toLowerCase().trim(),
+
+                state:
+                state.toLowerCase().trim()
+            },
+
+            {
+                new:true
+            }
+        );
+
+
+        // UPDATE SESSION
+
+        req.session.vendor = {
+
+            vendorId:
+            updatedVendor.vendorId,
+
+            name:
+            updatedVendor.name,
+
+            phone:
+            updatedVendor.phone,
+
+            email:
+            updatedVendor.email,
+
+            address:
+            updatedVendor.address,
+
+            area:
+            updatedVendor.area,
+
+            city:
+            updatedVendor.city,
+
+            state:
+            updatedVendor.state,
+
+            location:
+            updatedVendor.location
+        };
+
+
+        req.session.save(()=>{
+
+            res.redirect(
+                "/vendor?updated=true"
+            );
+        });
+
+    }catch(err){
+
+        res.status(500)
+        .send(err.message);
+    }
+});
 
 module.exports = router;
 module.exports.updateAuctionStatus = updateAuctionStatus

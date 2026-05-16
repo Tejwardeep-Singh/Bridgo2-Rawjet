@@ -1101,5 +1101,144 @@ async(req,res)=>{
         .send(err.message);
     }
 });
+router.get(
+"/edit-profile",
 
+async(req,res)=>{
+
+    try{
+
+        if(!req.session.supplier){
+
+            return res.redirect(
+                "/supplier/login"
+            );
+        }
+
+
+        const supplier =
+        await Supplier.findOne({
+
+            supplierId:
+            req.session.supplier.supplierId
+        });
+
+
+        res.render(
+            "supplierEditProfile",
+            {
+                supplier
+            }
+        );
+
+    }catch(err){
+
+        res.status(500)
+        .send(err.message);
+    }
+});
+router.post(
+"/edit-profile",
+
+async(req,res)=>{
+
+    try{
+
+        if(!req.session.supplier){
+
+            return res.redirect(
+                "/supplier/login"
+            );
+        }
+
+
+        const {
+
+            name,
+            phone,
+            email,
+            address,
+            area,
+            city,
+            state
+
+        } = req.body;
+
+
+        const updatedSupplier =
+        await Supplier.findOneAndUpdate(
+
+            {
+                supplierId:
+                req.session.supplier.supplierId
+            },
+
+            {
+                name,
+                phone,
+                email,
+                address,
+
+                area:
+                area.toLowerCase().trim(),
+
+                city:
+                city.toLowerCase().trim(),
+
+                state:
+                state.toLowerCase().trim()
+            },
+
+            {
+                new:true
+            }
+        );
+
+
+        // UPDATE SESSION
+
+        req.session.supplier = {
+
+            supplierId:
+            updatedSupplier.supplierId,
+
+            name:
+            updatedSupplier.name,
+
+            phone:
+            updatedSupplier.phone,
+
+            email:
+            updatedSupplier.email,
+
+            address:
+            updatedSupplier.address,
+
+            area:
+            updatedSupplier.area,
+
+            city:
+            updatedSupplier.city,
+
+            state:
+            updatedSupplier.state,
+
+            location:
+            updatedSupplier.location
+        };
+
+
+        req.session.save(()=>{
+
+            res.redirect(
+                "/supplier?updated=true"
+            );
+        });
+
+    }catch(err){
+
+        res.status(500)
+        .send(err.message);
+    }
+});
 module.exports = router;
