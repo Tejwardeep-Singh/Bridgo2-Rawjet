@@ -851,3 +851,118 @@ body.dark-mode .empty-feed{
     box-shadow:
     0 12px 30px rgba(99,102,241,0.35);
 }
+
+
+/* change password css */
+
+.change-password-container{
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 2rem;
+}
+
+.change-password-card{
+
+    width: 100%;
+
+    max-width: 450px;
+
+    background: white;
+
+    padding: 2rem;
+
+    border-radius: 24px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1rem;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.08);
+}
+
+.change-password-card h1{
+
+    text-align: center;
+
+    margin-bottom: 1rem;
+
+    color: #1e293b;
+}
+
+.change-password-card input{
+
+    padding: 1rem;
+
+    border-radius: 12px;
+
+    border: 1px solid #cbd5e1;
+
+    font-size: 1rem;
+}
+
+.change-password-card button{
+
+    border: none;
+
+    cursor: pointer;
+
+    padding: 1rem;
+
+    border-radius: 12px;
+
+    color: white;
+
+    font-size: 1rem;
+
+    font-weight: 600;
+
+    background:
+    linear-gradient(
+        135deg,
+        #3b82f6,
+        #6366f1
+    );
+}
+
+.password-error{
+
+    background: #fee2e2;
+
+    color: #dc2626;
+
+    padding: 0.8rem;
+
+    border-radius: 10px;
+}
+
+.password-success{
+
+    background: #dcfce7;
+
+    color: #16a34a;
+
+    padding: 0.8rem;
+
+    border-radius: 10px;
+}
+
+.back-dashboard{
+
+    text-align: center;
+
+    color: #475569;
+
+    text-decoration: none;
+
+    margin-top: 0.5rem;
+}

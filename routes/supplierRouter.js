@@ -8,47 +8,125 @@ const Notification = require("../models/notification");
 const locations = require("../config/locations");
 const moment = require("moment-timezone");
 const { uploadSupplier} = require("../config/cloudinaryupload");
+const bcrypt = require("bcrypt");
 
 // Supplier login route
-router.post("/login", async (req, res) => {
-    const { loginId, password } = req.body;
-    try {
-        const supplier = await Supplier.findOne({ supplierId: loginId, password: password });
-        if (!supplier) {
-            // Invalid credentials
-            return res.status(401).render("supplierLogin", { error: "Invalid Supplier ID or password" });
+router.post(
+"/login",
+
+async(req,res)=>{
+
+    const {
+        loginId,
+        password
+    } = req.body;
+
+    try{
+
+        const supplier =
+        await Supplier.findOne({
+
+            supplierId:loginId
+        });
+
+
+        if(!supplier){
+
+            return res.status(401)
+            .render(
+                "supplierLogin",
+                {
+                    error:
+                    "Invalid Supplier ID or Password"
+                }
+            );
         }
-        // Set session
+
+
+        const isMatch =
+        await bcrypt.compare(
+
+            password,
+
+            supplier.password
+        );
+
+
+        if(!isMatch){
+
+            return res.status(401)
+            .render(
+                "supplierLogin",
+                {
+                    error:
+                    "Invalid Supplier ID or Password"
+                }
+            );
+        }
+
+
+        // SESSION
+
         req.session.supplier = {
-            supplierId: supplier.supplierId,
-            name: supplier.name || supplier.supplierId,
-            email: supplier.email,
-            phone: supplier.phone,
-            contact: supplier.contact,
-            location:supplier.location
+
+            supplierId:
+            supplier.supplierId,
+
+            name:
+            supplier.name ||
+            supplier.supplierId,
+
+            email:
+            supplier.email,
+
+            phone:
+            supplier.phone,
+
+            contact:
+            supplier.contact,
+
+            location:
+            supplier.location
         };
-        
-        // Explicitly save session
-        req.session.save((err) => {
-            if (err) {
-                console.error("Session save error:", err);
-                return res.status(500).send("Error saving session");
+
+
+        req.session.save(err=>{
+
+            if(err){
+
+                console.error(
+                    "Session save error:",
+                    err
+                );
+
+                return res
+                .status(500)
+                .send(
+                    "Error saving session"
+                );
             }
 
             res.redirect("/supplier");
         });
-    } catch (err) {
-        res.status(500).send("Error logging in: " + err.message);
+
+    }catch(err){
+
+        res.status(500)
+        .send(
+            "Error logging in: "
+            + err.message
+        );
     }
 });
 
 router.post("/register", async (req, res) => {
     try {
         const { supplierId, name,password, email, phone, gst, address, area, city, state,longitude,latitude } = req.body;
+        const hashedPassword = await bcrypt.hash(password,10);
         const newSupplier = new Supplier({
             supplierId,
             name,
-            password,
+            password:hashedPassword,
             email,
             phone,
             gst,
@@ -902,6 +980,125 @@ async(req,res)=>{
 
             error:err.message
         });
+    }
+});
+router.get(
+"/change-password",
+
+(req,res)=>{
+
+    if(!req.session.supplier){
+
+        return res.redirect(
+            "/supplier/login"
+        );
+    }
+
+    res.render(
+        "supplierChangePassword",
+        {
+            supplier:req.session.supplier
+        }
+    );
+});
+router.post(
+"/change-password",
+
+async(req,res)=>{
+
+    try{
+
+        if(!req.session.supplier){
+
+            return res.redirect(
+                "/supplier/login"
+            );
+        }
+
+
+        const {
+
+            currentPassword,
+
+            newPassword,
+
+            confirmPassword
+
+        } = req.body;
+
+
+        if(newPassword !== confirmPassword){
+
+            return res.render(
+                "supplierChangePassword",
+                {
+                    supplier:req.session.supplier,
+
+                    error:
+                    "Passwords do not match"
+                }
+            );
+        }
+
+
+        const supplier =
+        await Supplier.findOne({
+
+            supplierId:
+            req.session.supplier.supplierId
+        });
+
+
+        const isMatch =
+        await bcrypt.compare(
+
+            currentPassword,
+
+            supplier.password
+        );
+
+
+        if(!isMatch){
+
+            return res.render(
+                "supplierChangePassword",
+                {
+                    supplier:req.session.supplier,
+
+                    error:
+                    "Current password incorrect"
+                }
+            );
+        }
+
+
+        const hashedPassword =
+        await bcrypt.hash(
+            newPassword,
+            10
+        );
+
+
+        supplier.password =
+        hashedPassword;
+
+        await supplier.save();
+
+
+        res.render(
+            "supplierChangePassword",
+            {
+                supplier:req.session.supplier,
+
+                success:
+                "Password changed successfully 🚀"
+            }
+        );
+
+    }catch(err){
+
+        res.status(500)
+        .send(err.message);
     }
 });
 

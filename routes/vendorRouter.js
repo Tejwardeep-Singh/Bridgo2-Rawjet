@@ -10,6 +10,7 @@ const Notification = require("../models/notification");
 const razorpay = require("../config/razorpay");
 const locations = require("../config/locations");
 const moment = require("moment-timezone");
+const bcrypt = require("bcrypt");
 
 
 
@@ -25,9 +26,12 @@ router.post("/login", async (req, res) => {
             // Vendor not found
             return res.status(401).render("vendorLogin", { error: "Invalid Vendor ID or Password" });
         }
-
-        // Check password (plain text, for demo; use hashing in production)
-        if (vendor.password !== password) {
+        const isMatch =
+            await bcrypt.compare(
+                password,
+                vendor.password
+            );
+        if (!isMatch) {
             return res.status(401).render("vendorLogin", { error: "Invalid Vendor ID or Password" });
         }
         
@@ -65,12 +69,13 @@ router.post("/login", async (req, res) => {
 router.post("/register", async (req, res) => {
     try {
         const { vendorId,name, password, email, phone, gst, address, area, city, state,longitude,latitude } = req.body;
+        const hashedPassword = await bcrypt.hash(password,10);
 
         // Create a new Vendor instance
         const newVendor = new Vendor({
             vendorId,
             name,
-            password,
+            password:hashedPassword,
             email,
             phone,
             gst,
@@ -1195,6 +1200,125 @@ async(req,res)=>{
 
             error:err.message
         });
+    }
+});
+router.get(
+"/change-password",
+
+(req,res)=>{
+
+    if(!req.session.vendor){
+
+        return res.redirect(
+            "/vendor/login"
+        );
+    }
+
+    res.render(
+        "vendorChangePassword",
+        {
+            vendor:req.session.vendor
+        }
+    );
+});
+router.post(
+"/change-password",
+
+async(req,res)=>{
+
+    try{
+
+        if(!req.session.vendor){
+
+            return res.redirect(
+                "/vendor/login"
+            );
+        }
+
+
+        const {
+
+            currentPassword,
+
+            newPassword,
+
+            confirmPassword
+
+        } = req.body;
+
+
+        if(newPassword !== confirmPassword){
+
+            return res.render(
+                "vendorChangePassword",
+                {
+                    vendor:req.session.vendor,
+
+                    error:
+                    "Passwords do not match"
+                }
+            );
+        }
+
+
+        const vendor =
+        await Vendor.findOne({
+
+            vendorId:
+            req.session.vendor.vendorId
+        });
+
+
+        const isMatch =
+        await bcrypt.compare(
+
+            currentPassword,
+
+            vendor.password
+        );
+
+
+        if(!isMatch){
+
+            return res.render(
+                "vendorChangePassword",
+                {
+                    vendor:req.session.vendor,
+
+                    error:
+                    "Current password incorrect"
+                }
+            );
+        }
+
+
+        const hashedPassword =
+        await bcrypt.hash(
+            newPassword,
+            10
+        );
+
+
+        vendor.password =
+        hashedPassword;
+
+        await vendor.save();
+
+
+        res.render(
+            "vendorChangePassword",
+            {
+                vendor:req.session.vendor,
+
+                success:
+                "Password changed successfully 🚀"
+            }
+        );
+
+    }catch(err){
+
+        res.status(500)
+        .send(err.message);
     }
 });
 
