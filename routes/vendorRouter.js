@@ -1117,6 +1117,86 @@ router.post("/payment-success/:orderId", async (req, res) => {
         });
     }
 });
+router.post(
+"/update-location",
+
+async(req,res)=>{
+
+    try{
+
+        const {
+            latitude,
+            longitude
+        } = req.body;
+
+
+        // DATABASE UPDATE
+
+        await Vendor.findOneAndUpdate(
+
+            {
+                vendorId:
+                req.session.vendor.vendorId
+            },
+
+            {
+                location:{
+                    type:"Point",
+
+                    coordinates:[
+
+                        parseFloat(longitude),
+
+                        parseFloat(latitude)
+                    ]
+                }
+            }
+        );
+
+
+        // SESSION UPDATE
+
+        req.session.vendor.location = {
+
+            type:"Point",
+
+            coordinates:[
+
+                parseFloat(longitude),
+
+                parseFloat(latitude)
+            ]
+        };
+
+
+        // SAVE SESSION
+
+        req.session.save(err=>{
+
+            if(err){
+
+                return res.status(500)
+                .json({
+                    success:false
+                });
+            }
+
+            res.json({
+                success:true
+            });
+        });
+
+    }catch(err){
+
+        res.status(500)
+        .json({
+
+            success:false,
+
+            error:err.message
+        });
+    }
+});
 
 module.exports = router;
 module.exports.updateAuctionStatus = updateAuctionStatus

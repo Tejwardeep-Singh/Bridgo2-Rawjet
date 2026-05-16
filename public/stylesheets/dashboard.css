@@ -802,3 +802,52 @@ body.dark-mode .empty-feed{
     }
 }
 
+.location-update-wrapper{
+
+    margin-top: 2rem;
+
+    display: flex;
+
+    justify-content: flex-end;
+}
+
+.location-update-btn{
+
+    border: none;
+
+    outline: none;
+
+    cursor: pointer;
+
+    padding:
+    0.9rem 1.4rem;
+
+    border-radius: 14px;
+
+    font-size: 0.95rem;
+
+    font-weight: 600;
+
+    color: white;
+
+    background:
+    linear-gradient(
+        135deg,
+        #3b82f6,
+        #6366f1
+    );
+
+    box-shadow:
+    0 8px 25px rgba(59,130,246,0.25);
+
+    transition: 0.3s ease;
+}
+
+.location-update-btn:hover{
+
+    transform:
+    translateY(-2px);
+
+    box-shadow:
+    0 12px 30px rgba(99,102,241,0.35);
+}

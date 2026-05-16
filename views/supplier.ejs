@@ -99,6 +99,17 @@
                 <div class="info-item"><label>Phone</label><span><%= supplier.phone %></span></div>
                 <div class="info-item"><label>Email</label><span><%= supplier.email %></span></div>
             </div>
+            <div class="location-update-wrapper">
+                <button
+                    id="updateSupplierLocationBtn"
+                    class="location-update-btn"
+                >
+
+                    📍 Sync Current Location
+
+                </button>
+
+            </div>
         </section>
 
         <nav class="dashboard-actions">
@@ -178,141 +189,259 @@
             setDarkMode(enabled);
             localStorage.setItem('darkMode', enabled);
         });
+
+
+
+        const updateSupplierLocationBtn =
+document.getElementById(
+    "updateSupplierLocationBtn"
+);
+
+if(updateSupplierLocationBtn){
+
+    updateSupplierLocationBtn
+    .addEventListener(
+        "click",
+
+        ()=>{
+
+            navigator.geolocation
+            .getCurrentPosition(
+
+                async(position)=>{
+
+                    const latitude =
+                    position.coords.latitude;
+
+                    const longitude =
+                    position.coords.longitude;
+
+                    updateSupplierLocationBtn
+                        .innerHTML =
+                        "⏳ Updating...";
+
+                        updateSupplierLocationBtn
+                        .disabled = true;
+                    const response =
+                    await fetch(
+
+                        "/supplier/update-location",
+
+                        {
+
+                            method:"POST",
+
+                            headers:{
+                                "Content-Type":
+                                "application/json"
+                            },
+
+                            body:JSON.stringify({
+
+                                latitude,
+                                longitude
+                            })
+                        }
+                    );
+
+
+                    const data =
+                    await response.json();
+
+
+                    if(data.success){
+
+    updateSupplierLocationBtn
+    .innerHTML =
+    "✅ Location Updated";
+
+    updateSupplierLocationBtn
+    .style.background =
+    "#10b981";
+
+
+    setTimeout(()=>{
+
+        updateSupplierLocationBtn
+        .innerHTML =
+        "📍 Sync Current Location";
+
+        updateSupplierLocationBtn
+        .style.background =
+        "";
+
+    },2000);
+}
+
+                },
+
+                (err)=>{
+
+                   updateSupplierLocationBtn
+.innerHTML =
+"❌ Failed";
+
+updateSupplierLocationBtn
+.style.background =
+"#ef4444";
+
+
+setTimeout(()=>{
+
+    updateSupplierLocationBtn
+    .innerHTML =
+    "📍 Sync Current Location";
+
+    updateSupplierLocationBtn
+    .style.background =
+    "";
+
+    updateSupplierLocationBtn
+    .disabled = false;
+
+},2000);
+                }
+            );
+        }
+    );
+}
         const socket = io();
 
 socket.emit(
   "joinUserRoom",
-  "<%= supplier.supplierName%>"
+  "<%= supplier.supplierId%>"
 );
-const notificationBtn =
+const notificationBtn =0
 // TOGGLE PANEL
 
-notificationBtn.addEventListener(
-    "click",
-    ()=>{
+// notificationBtn.addEventListener(
+//     "click",
+//     ()=>{
 
-        notificationPanel
-        .classList
-        .toggle("active");
+//         notificationPanel
+//         .classList
+//         .toggle("active");
 
-        unreadCount = 0;
+//         unreadCount = 0;
 
-        notificationCount.textContent =
-        unreadCount;
-    }
-);
-
-
-// SOCKET LISTENER
-
-socket.on(
-    "newNotification",
-    (data)=>{
-
-        unreadCount++;
-
-        notificationCount.textContent =
-        unreadCount;
+//         notificationCount.textContent =
+//         unreadCount;
+//     }
+// );
 
 
-        const emptyMessage =
-        document.querySelector(
-            ".empty-notification"
-        );
+// // SOCKET LISTENER
 
-        if(emptyMessage){
-            emptyMessage.remove();
-        }
+// socket.on(
+//     "newNotification",
+//     (data)=>{
 
+//         unreadCount++;
 
-        const notificationItem =
-        document.createElement("div");
-
-        notificationItem.classList.add(
-            "notification-item"
-        );
+//         notificationCount.textContent =
+//         unreadCount;
 
 
-        notificationItem.innerHTML =
-        `
-        <div class="notification-title">
-            ${data.title}
-        </div>
+//         const emptyMessage =
+//         document.querySelector(
+//             ".empty-notification"
+//         );
 
-        <div class="notification-message">
-            ${data.message}
-        </div>
-
-        <div class="notification-time">
-            Just now
-        </div>
-        `;
+//         if(emptyMessage){
+//             emptyMessage.remove();
+//         }
 
 
-        notificationList.prepend(
-            notificationItem
-        );
+//         const notificationItem =
+//         document.createElement("div");
+
+//         notificationItem.classList.add(
+//             "notification-item"
+//         );
 
 
-        console.log(data);
-    }
-);
-const liveStack =
-document.getElementById(
-    "liveNotificationStack"
-);
+//         notificationItem.innerHTML =
+//         `
+//         <div class="notification-title">
+//             ${data.title}
+//         </div>
 
-socket.on(
-    "newNotification",
-    (data)=>{
+//         <div class="notification-message">
+//             ${data.message}
+//         </div>
 
-        const emptyFeed =
-        document.querySelector(
-            ".empty-feed"
-        );
+//         <div class="notification-time">
+//             Just now
+//         </div>
+//         `;
 
-        if(emptyFeed){
 
-            emptyFeed.remove();
-        }
+//         notificationList.prepend(
+//             notificationItem
+//         );
 
-        const card =
-        document.createElement("div");
 
-        card.classList.add(
-            "live-feed-card"
-        );
+//         console.log(data);
+//     }
+// );
+// const liveStack =
+// document.getElementById(
+//     "liveNotificationStack"
+// );
 
-        card.innerHTML =
-        `
-        <div class="feed-left">
+// socket.on(
+//     "newNotification",
+//     (data)=>{
 
-            <div class="feed-icon">
-                🔔
-            </div>
+//         const emptyFeed =
+//         document.querySelector(
+//             ".empty-feed"
+//         );
 
-            <div class="feed-content">
+//         if(emptyFeed){
 
-                <h3>
-                    ${data.title}
-                </h3>
+//             emptyFeed.remove();
+//         }
 
-                <p>
-                    ${data.message}
-                </p>
+//         const card =
+//         document.createElement("div");
 
-            </div>
+//         card.classList.add(
+//             "live-feed-card"
+//         );
 
-        </div>
+//         card.innerHTML =
+//         `
+//         <div class="feed-left">
 
-        <div class="feed-time">
-            Just now
-        </div>
-        `;
+//             <div class="feed-icon">
+//                 🔔
+//             </div>
 
-        liveStack.prepend(card);
-    }
-);
+//             <div class="feed-content">
+
+//                 <h3>
+//                     ${data.title}
+//                 </h3>
+
+//                 <p>
+//                     ${data.message}
+//                 </p>
+
+//             </div>
+
+//         </div>
+
+//         <div class="feed-time">
+//             Just now
+//         </div>
+//         `;
+
+//         liveStack.prepend(card);
+//     }
+// );
+
+
 
     </script>
 </body>

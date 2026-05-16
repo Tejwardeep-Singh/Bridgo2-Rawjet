@@ -824,5 +824,85 @@ router.post("/place-vendor-bid", async (req, res) => {
         res.status(500).json({ success: false, error: err.message });
     }
 });
+router.post(
+"/update-location",
+
+async(req,res)=>{
+
+    try{
+
+        const {
+            latitude,
+            longitude
+        } = req.body;
+
+
+        // DATABASE UPDATE
+
+        await Supplier.findOneAndUpdate(
+
+            {
+                supplierId:
+                req.session.supplier.supplierId
+            },
+
+            {
+                location:{
+                    type:"Point",
+
+                    coordinates:[
+
+                        parseFloat(longitude),
+
+                        parseFloat(latitude)
+                    ]
+                }
+            }
+        );
+
+
+        // SESSION UPDATE
+
+        req.session.supplier.location = {
+
+            type:"Point",
+
+            coordinates:[
+
+                parseFloat(longitude),
+
+                parseFloat(latitude)
+            ]
+        };
+
+
+        // SAVE SESSION
+
+        req.session.save(err=>{
+
+            if(err){
+
+                return res.status(500)
+                .json({
+                    success:false
+                });
+            }
+
+            res.json({
+                success:true
+            });
+        });
+
+    }catch(err){
+
+        res.status(500)
+        .json({
+
+            success:false,
+
+            error:err.message
+        });
+    }
+});
 
 module.exports = router;
