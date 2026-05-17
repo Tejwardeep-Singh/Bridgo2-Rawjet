@@ -129,4 +129,11 @@ requirementSchema.index({
 
     location:"2dsphere"
 });
-module.exports = mongoose.model('Requirement', requirementSchema);
+module.exports =
+
+mongoose.models.Requirement ||
+
+mongoose.model(
+    "Requirement",
+    requirementSchema
+);

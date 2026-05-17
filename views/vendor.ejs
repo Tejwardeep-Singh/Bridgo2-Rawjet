@@ -312,142 +312,251 @@ setTimeout(()=>{
         }
     );
 }
-        const socket = io();
+       
 
+const socket = io();
+function formatTime(date){
+
+    const seconds =
+    Math.floor(
+
+        (new Date() - new Date(date))
+        / 1000
+    );
+
+
+    if(seconds < 60){
+
+        return "Just now";
+    }
+
+
+    const minutes =
+    Math.floor(seconds / 60);
+
+    if(minutes < 60){
+
+        return `${minutes} min ago`;
+    }
+
+
+    const hours =
+    Math.floor(minutes / 60);
+
+    if(hours < 24){
+
+        return `${hours} hr ago`;
+    }
+
+
+    const days =
+    Math.floor(hours / 24);
+
+    return `${days} day ago`;
+}
+function addNotificationToUI(
+
+    data,
+
+    increaseCount=true
+
+){
+
+    // UPDATE COUNT
+
+    if(increaseCount){
+
+        unreadCount++;
+
+        notificationCount.textContent =
+        unreadCount;
+    }
+
+
+    // REMOVE EMPTY PANEL MESSAGE
+
+    const emptyMessage =
+    document.querySelector(
+        ".empty-notification"
+    );
+
+    if(emptyMessage){
+
+        emptyMessage.remove();
+    }
+
+
+    // CREATE PANEL ITEM
+
+    const notificationItem =
+    document.createElement("div");
+
+    notificationItem.classList.add(
+        "notification-item"
+    );
+
+
+    notificationItem.innerHTML =
+
+    `
+    <div class="notification-title">
+        ${data.title}
+    </div>
+
+    <div class="notification-message">
+        ${data.message}
+    </div>
+
+    <div class="notification-time">
+    ${formatTime(data.createdAt)}
+</div>
+    `;
+
+
+    notificationList.prepend(
+        notificationItem
+    );
+
+
+    // LIVE STACK
+
+    const emptyFeed =
+    document.querySelector(
+        ".empty-feed"
+    );
+
+    if(emptyFeed){
+
+        emptyFeed.remove();
+    }
+
+
+    const card =
+    document.createElement("div");
+
+    card.classList.add(
+        "live-feed-card"
+    );
+
+
+    card.innerHTML =
+
+    `
+    <div class="feed-left">
+
+        <div class="feed-icon">
+            🔔
+        </div>
+
+        <div class="feed-content">
+
+            <h3>
+                ${data.title}
+            </h3>
+
+            <p>
+                ${data.message}
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="feed-time">
+    ${formatTime(data.createdAt)}
+</div>
+    `;
+
+
+    liveStack.prepend(card);
+}
 socket.emit(
   "joinUserRoom",
   "<%= vendor.vendorId%>"
 );
 
-// const notificationBtn =
-// // TOGGLE PANEL
+const notificationBtn =
+document.getElementById(
+    "notificationBtn"
+);
 
-// notificationBtn.addEventListener(
-//     "click",
-//     ()=>{
+const notificationPanel =
+document.getElementById(
+    "notificationPanel"
+);
 
-//         notificationPanel
-//         .classList
-//         .toggle("active");
+const notificationCount =
+document.getElementById(
+    "notificationCount"
+);
 
-//         unreadCount = 0;
+const notificationList =
+document.getElementById(
+    "notificationList"
+);
+const liveStack =
+document.getElementById(
+    "liveNotificationStack"
+);
 
-//         notificationCount.textContent =
-//         unreadCount;
-//     }
-// );
+let unreadCount = 0;
+notificationBtn.addEventListener(
 
+    "click",
 
-// // SOCKET LISTENER
+    ()=>{
 
-// socket.on(
-//     "newNotification",
-//     (data)=>{
+        notificationPanel
+        .classList
+        .toggle("active");
 
-//         unreadCount++;
+        unreadCount = 0;
 
-//         notificationCount.textContent =
-//         unreadCount;
+        notificationCount.textContent =
+        unreadCount;
+    }
+);
 
+socket.on(
 
-//         const emptyMessage =
-//         document.querySelector(
-//             ".empty-notification"
-//         );
+    "new-notification",
 
-//         if(emptyMessage){
-//             emptyMessage.remove();
-//         }
+    (data)=>{
 
+        addNotificationToUI(data);
+    }
+);
+async function
+loadNotifications(){
 
-//         const notificationItem =
-//         document.createElement("div");
+    try{
 
-//         notificationItem.classList.add(
-//             "notification-item"
-//         );
+        const response =
+        await fetch(
+            "/vendor/notifications"
+        );
 
-
-//         notificationItem.innerHTML =
-//         `
-//         <div class="notification-title">
-//             ${data.title}
-//         </div>
-
-//         <div class="notification-message">
-//             ${data.message}
-//         </div>
-
-//         <div class="notification-time">
-//             Just now
-//         </div>
-//         `;
-
-
-//         notificationList.prepend(
-//             notificationItem
-//         );
+        const notifications =
+        await response.json();
 
 
-//         console.log(data);
-//     }
-// );
-// const liveStack =
-// document.getElementById(
-//     "liveNotificationStack"
-// );
+        notifications.reverse()
+        .forEach(data=>{
 
-// socket.on(
-//     "newNotification",
-//     (data)=>{
+            addNotificationToUI(
 
-//         const emptyFeed =
-//         document.querySelector(
-//             ".empty-feed"
-//         );
+                data,
 
-//         if(emptyFeed){
+                false
+            );
+        });
 
-//             emptyFeed.remove();
-//         }
+    }catch(err){
 
-//         const card =
-//         document.createElement("div");
-
-//         card.classList.add(
-//             "live-feed-card"
-//         );
-
-//         card.innerHTML =
-//         `
-//         <div class="feed-left">
-
-//             <div class="feed-icon">
-//                 🔔
-//             </div>
-
-//             <div class="feed-content">
-
-//                 <h3>
-//                     ${data.title}
-//                 </h3>
-
-//                 <p>
-//                     ${data.message}
-//                 </p>
-
-//             </div>
-
-//         </div>
-
-//         <div class="feed-time">
-//             Just now
-//         </div>
-//         `;
-
-//         liveStack.prepend(card);
-//     }
-// );
+        console.log(err);
+    }
+}
+loadNotifications();
 
     </script>
 </body>

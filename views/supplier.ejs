@@ -307,141 +307,252 @@ setTimeout(()=>{
         }
     );
 }
-        const socket = io();
+       
 
+
+const socket = io();
+function formatTime(date){
+
+    const seconds =
+    Math.floor(
+
+        (new Date() - new Date(date))
+        / 1000
+    );
+
+
+    if(seconds < 60){
+
+        return "Just now";
+    }
+
+
+    const minutes =
+    Math.floor(seconds / 60);
+
+    if(minutes < 60){
+
+        return `${minutes} min ago`;
+    }
+
+
+    const hours =
+    Math.floor(minutes / 60);
+
+    if(hours < 24){
+
+        return `${hours} hr ago`;
+    }
+
+
+    const days =
+    Math.floor(hours / 24);
+
+    return `${days} day ago`;
+}
+function addNotificationToUI(
+
+    data,
+
+    increaseCount=true
+
+){
+
+    // UPDATE COUNT
+
+    if(increaseCount){
+
+        unreadCount++;
+
+        notificationCount.textContent =
+        unreadCount;
+    }
+
+
+    // REMOVE EMPTY PANEL MESSAGE
+
+    const emptyMessage =
+    document.querySelector(
+        ".empty-notification"
+    );
+
+    if(emptyMessage){
+
+        emptyMessage.remove();
+    }
+
+
+    // CREATE PANEL ITEM
+
+    const notificationItem =
+    document.createElement("div");
+
+    notificationItem.classList.add(
+        "notification-item"
+    );
+
+
+    notificationItem.innerHTML =
+
+    `
+    <div class="notification-title">
+        ${data.title}
+    </div>
+
+    <div class="notification-message">
+        ${data.message}
+    </div>
+
+    <div class="notification-time">
+    ${formatTime(data.createdAt)}
+</div>
+    `;
+
+
+    notificationList.prepend(
+        notificationItem
+    );
+
+
+    // LIVE STACK
+
+    const emptyFeed =
+    document.querySelector(
+        ".empty-feed"
+    );
+
+    if(emptyFeed){
+
+        emptyFeed.remove();
+    }
+
+
+    const card =
+    document.createElement("div");
+
+    card.classList.add(
+        "live-feed-card"
+    );
+
+
+    card.innerHTML =
+
+    `
+    <div class="feed-left">
+
+        <div class="feed-icon">
+            🔔
+        </div>
+
+        <div class="feed-content">
+
+            <h3>
+                ${data.title}
+            </h3>
+
+            <p>
+                ${data.message}
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="feed-time">
+    ${formatTime(data.createdAt)}
+</div>
+    `;
+
+
+    liveStack.prepend(card);
+}
 socket.emit(
   "joinUserRoom",
   "<%= supplier.supplierId%>"
 );
-const notificationBtn =0
-// TOGGLE PANEL
 
-// notificationBtn.addEventListener(
-//     "click",
-//     ()=>{
+const notificationBtn =
+document.getElementById(
+    "notificationBtn"
+);
 
-//         notificationPanel
-//         .classList
-//         .toggle("active");
+const notificationPanel =
+document.getElementById(
+    "notificationPanel"
+);
 
-//         unreadCount = 0;
+const notificationCount =
+document.getElementById(
+    "notificationCount"
+);
 
-//         notificationCount.textContent =
-//         unreadCount;
-//     }
-// );
+const notificationList =
+document.getElementById(
+    "notificationList"
+);
+const liveStack =
+document.getElementById(
+    "liveNotificationStack"
+);
 
+let unreadCount = 0;
+notificationBtn.addEventListener(
 
-// // SOCKET LISTENER
+    "click",
 
-// socket.on(
-//     "newNotification",
-//     (data)=>{
+    ()=>{
 
-//         unreadCount++;
+        notificationPanel
+        .classList
+        .toggle("active");
 
-//         notificationCount.textContent =
-//         unreadCount;
+        unreadCount = 0;
 
+        notificationCount.textContent =
+        unreadCount;
+    }
+);
 
-//         const emptyMessage =
-//         document.querySelector(
-//             ".empty-notification"
-//         );
+socket.on(
 
-//         if(emptyMessage){
-//             emptyMessage.remove();
-//         }
+    "new-notification",
 
+    (data)=>{
 
-//         const notificationItem =
-//         document.createElement("div");
+        addNotificationToUI(data);
+    }
+);
+async function
+loadNotifications(){
 
-//         notificationItem.classList.add(
-//             "notification-item"
-//         );
+    try{
 
+        const response =
+        await fetch(
+            "/supplier/notifications"
+        );
 
-//         notificationItem.innerHTML =
-//         `
-//         <div class="notification-title">
-//             ${data.title}
-//         </div>
-
-//         <div class="notification-message">
-//             ${data.message}
-//         </div>
-
-//         <div class="notification-time">
-//             Just now
-//         </div>
-//         `;
-
-
-//         notificationList.prepend(
-//             notificationItem
-//         );
+        const notifications =
+        await response.json();
 
 
-//         console.log(data);
-//     }
-// );
-// const liveStack =
-// document.getElementById(
-//     "liveNotificationStack"
-// );
+        notifications.reverse()
+        .forEach(data=>{
 
-// socket.on(
-//     "newNotification",
-//     (data)=>{
+            addNotificationToUI(
 
-//         const emptyFeed =
-//         document.querySelector(
-//             ".empty-feed"
-//         );
+                data,
 
-//         if(emptyFeed){
+                false
+            );
+        });
 
-//             emptyFeed.remove();
-//         }
+    }catch(err){
 
-//         const card =
-//         document.createElement("div");
-
-//         card.classList.add(
-//             "live-feed-card"
-//         );
-
-//         card.innerHTML =
-//         `
-//         <div class="feed-left">
-
-//             <div class="feed-icon">
-//                 🔔
-//             </div>
-
-//             <div class="feed-content">
-
-//                 <h3>
-//                     ${data.title}
-//                 </h3>
-
-//                 <p>
-//                     ${data.message}
-//                 </p>
-
-//             </div>
-
-//         </div>
-
-//         <div class="feed-time">
-//             Just now
-//         </div>
-//         `;
-
-//         liveStack.prepend(card);
-//     }
-// );
+        console.log(err);
+    }
+}
+loadNotifications();
 
 
 

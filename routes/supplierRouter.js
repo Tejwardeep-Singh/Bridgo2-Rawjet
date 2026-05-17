@@ -1241,4 +1241,37 @@ async(req,res)=>{
         .send(err.message);
     }
 });
+
+router.get(
+"/notifications",
+
+async(req,res)=>{
+
+    try{
+
+        if(!req.session.supplier){
+
+            return res.json([]);
+        }
+
+
+        const notifications =
+        await Notification.find({
+
+            userId:
+            req.session.supplier.supplierId
+
+        })
+        .sort({createdAt:-1})
+        .limit(20);
+
+
+        res.json(notifications);
+
+    }catch(err){
+
+        res.status(500)
+        .json([]);
+    }
+});
 module.exports = router;

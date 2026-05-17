@@ -11,8 +11,11 @@ const razorpay = require("../config/razorpay");
 const locations = require("../config/locations");
 const moment = require("moment-timezone");
 const bcrypt = require("bcrypt");
-
-
+const sendNotification =
+require(
+    "../utils/sendNotification"
+);
+const Supplier = require("../models/supplierDetails");
 
 
 // Vendor login route
@@ -565,23 +568,61 @@ router.post("/submit-requirement", async (req, res) => {
             : "",
 
             location:{
-                type:"Point",
 
-                coordinates:[
+    type:"Point",
 
-                    req.session.vendor.location
-                    .coordinates[0],
+    coordinates:[
 
-                    req.session.vendor.location
-                    .coordinates[1]
-                ]
-            },
+        req.session.vendor.location
+        ? req.session.vendor.location
+        .coordinates[0]
+        : 0,
+
+        req.session.vendor.location
+        ? req.session.vendor.location
+        .coordinates[1]
+        : 0
+    ]
+},
             requirement,
             quantity,
-            other
+            additionalNotes:other
         });
             
         await newRequirement.save();
+        const matchingStocks =
+await Stock.find({
+
+    name:
+    itemName.toLowerCase().trim(),
+
+    city:
+    req.session.vendor.city
+});
+
+
+const io =
+req.app.get("io");
+
+
+for(const stock of matchingStocks){
+
+    await sendNotification({
+
+        io,
+
+        userId: stock.supplierId,
+
+        userType:"supplier",
+
+        title:
+        "📦 New Requirement",
+
+        message:
+        `${req.session.vendor.name}
+        needs ${itemName}`
+    });
+}
         
         
 
@@ -1462,5 +1503,61 @@ async(req,res)=>{
     }
 });
 
+
+router.get(
+"/notifications",
+
+async(req,res)=>{
+
+    try{
+
+        if(!req.session.vendor){
+
+            return res.json([]);
+        }
+
+
+        const notifications =
+        await Notification.find({
+
+            userId:
+            req.session.vendor.vendorId
+
+        })
+        .sort({createdAt:-1})
+        .limit(20);
+
+
+        res.json(notifications);
+
+    }catch(err){
+
+        res.status(500)
+        .json([]);
+    }
+});
+router.get(
+"/test-notification",
+
+async(req,res)=>{
+
+    await sendNotification({
+
+        io:req.app.get("io"),
+
+        userId:
+        req.session.vendor.vendorId,
+
+        userType:"vendor",
+
+        title:
+        "Test Notification 🚀",
+
+        message:
+        "Realtime notifications working"
+    });
+
+    res.send("done");
+});
 module.exports = router;
 module.exports.updateAuctionStatus = updateAuctionStatus
