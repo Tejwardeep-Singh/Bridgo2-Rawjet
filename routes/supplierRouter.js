@@ -9,6 +9,8 @@ const locations = require("../config/locations");
 const moment = require("moment-timezone");
 const { uploadSupplier} = require("../config/cloudinaryupload");
 const bcrypt = require("bcrypt");
+const sendNotification = require("../utils/sendNotification");
+const Vendor = require("../models/vendorDetails");
 
 // Supplier login route
 router.post(
@@ -232,6 +234,37 @@ router.post("/auction/auctions", uploadSupplier.single("image"), async (req, res
         });
 
         await newStock.save();
+        const nearbyVendors =
+await Vendor.find({
+
+    city:
+    req.session.supplier.city
+});
+
+
+const io =
+req.app.get("io");
+
+
+for(const vendor of nearbyVendors){
+
+    await sendNotification({
+
+        io,
+
+        userId:
+        vendor.vendorId,
+
+        userType:"vendor",
+
+        title:
+        "🔨 New Auction",
+
+        message:
+        `${name} auction
+        now live nearby`
+    });
+}
         res.redirect("/supplier/auction/auctionsView");
     } catch (err) {
         res.status(500).send("Error creating auction: " + err.message);
@@ -703,6 +736,28 @@ router.post("/respond-requirement", async (req, res) => {
     });
         
         await requirement.save();
+        const io =
+req.app.get("io");
+
+
+await sendNotification({
+
+    io,
+
+    userId:
+    requirement.vendorId,
+
+    userType:"vendor",
+
+    title:
+    "🚚 Supplier Response",
+
+    message:
+    `${req.session.supplier.name}
+    responded to your
+    ${requirement.itemName}
+    requirement`
+});
         
         // Set session-based flash message
         req.session.successMessage = true;

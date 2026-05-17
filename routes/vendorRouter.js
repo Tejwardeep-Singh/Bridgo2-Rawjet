@@ -11,10 +11,7 @@ const razorpay = require("../config/razorpay");
 const locations = require("../config/locations");
 const moment = require("moment-timezone");
 const bcrypt = require("bcrypt");
-const sendNotification =
-require(
-    "../utils/sendNotification"
-);
+const sendNotification = require("../utils/sendNotification");
 const Supplier = require("../models/supplierDetails");
 
 
