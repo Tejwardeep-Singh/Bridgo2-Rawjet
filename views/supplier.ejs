@@ -309,7 +309,7 @@ setTimeout(()=>{
 }
        
 
-
+let initialLoadComplete = false;
 const socket = io();
 function formatTime(date){
 
@@ -532,7 +532,10 @@ socket.on(
 
     (data)=>{
 
-        addNotificationToUI(data);
+        if(initialLoadComplete){
+
+            addNotificationToUI(data);
+        }
     }
 );
 async function
@@ -559,6 +562,7 @@ loadNotifications(){
                 false
             );
         });
+        initialLoadComplete = true;
 
     }catch(err){
 
