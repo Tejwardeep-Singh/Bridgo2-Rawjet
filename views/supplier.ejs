@@ -350,6 +350,8 @@ function formatTime(date){
 
     return `${days} day ago`;
 }
+const renderedNotifications =
+new Set();
 function addNotificationToUI(
 
     data,
@@ -358,6 +360,17 @@ function addNotificationToUI(
 
 ){
 
+    const notificationKey =
+
+`${data.title}-${data.message}-${data.createdAt}`;
+
+
+if(renderedNotifications.has(notificationKey)){
+
+    return;
+}
+
+renderedNotifications.add(notificationKey); 
     // UPDATE COUNT
 
     if(increaseCount){

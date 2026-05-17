@@ -1,5 +1,5 @@
 const Notification =
-require("../models/Notification");
+require("../models/notification");
 
 const sendNotification =
 async({
