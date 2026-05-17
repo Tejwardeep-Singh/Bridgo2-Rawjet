@@ -88,7 +88,19 @@ async(req,res)=>{
             supplier.contact,
 
             location:
-            supplier.location
+            supplier.location,
+            
+            address:
+            supplier.address,
+
+            area:
+            supplier.area,
+
+            city:
+            supplier.city,
+
+            state:
+            supplier.state
         };
 
 
@@ -262,7 +274,7 @@ for(const vendor of nearbyVendors){
 
         message:
         `${name} auction
-        now live nearby`
+        is scheduled nearby.`
     });
 }
         res.redirect("/supplier/auction/auctionsView");

@@ -740,6 +740,39 @@ router.post("/create-auction", async (req, res) => {
         });
         
         await newAuction.save();
+        const nearbySuppliers =
+await Supplier.find({
+
+    city:
+    req.session.vendor.city
+});
+
+
+const io =
+req.app.get("io");
+
+
+for(const supplier of nearbySuppliers){
+
+    await sendNotification({
+
+        io,
+
+        userId:
+        supplier.supplierId,
+
+        userType:"supplier",
+
+        title:
+        "🔨 New Vendor Auction",
+
+        message:
+        `${req.session.vendor.name}
+        created a new
+        ${itemName}
+        auction nearby`
+    });
+}
         
         res.redirect("/vendor/my-auctions?success=true");
     } catch (err) {
