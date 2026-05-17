@@ -37,9 +37,9 @@ new mongoose.Schema({
 
 module.exports =
 
-mongoose.models.Notification ||
+mongoose.models.notification ||
 
 mongoose.model(
-    "Notification",
+    "notification",
     notificationSchema
 );
