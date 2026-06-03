@@ -617,7 +617,16 @@ for(const stock of matchingStocks){
 
         message:
         `${req.session.vendor.name}
-        needs ${itemName}`
+        needs ${itemName}`,
+
+        type:"requirement_submitted",
+
+        category:"requirement",
+
+        metadata:{
+            requirementId:newRequirement._id,
+            itemName
+        }
     });
 }
         
@@ -770,7 +779,16 @@ for(const supplier of nearbySuppliers){
         `${req.session.vendor.name}
         created a new
         ${itemName}
-        auction nearby`
+        auction nearby`,
+
+        type:"vendor_auction_created",
+
+        category:"auction",
+
+        metadata:{
+            auctionId:newAuction._id,
+            itemName
+        }
     });
 }
         
@@ -781,24 +799,67 @@ for(const supplier of nearbySuppliers){
 });
 
 // Function to update auction status based on time
-async function updateAuctionStatus() {
+async function updateAuctionStatus(io) {
     try {
         const now = new Date();
         
         // Update live auctions that have ended
-        await VendorAuction.updateMany(
-            {
-                status: 'live',
-                isLive: true,
-                auctionEnd: { $lte: now }
-            },
-            {
-                $set: {
-                    status: 'ended',
-                    isLive: false
-                }
+        const endedAuctions = await VendorAuction.find({
+            status: 'live',
+            isLive: true,
+            auctionEnd: { $lte: now }
+        });
+
+        for (const auction of endedAuctions) {
+            if (auction.bidders && auction.bidders.length > 0 && !auction.winner?.supplierId) {
+                const winningBidder = auction.bidders.reduce((min, b) => b.bidAmount < min.bidAmount ? b : min, auction.bidders[0]);
+                auction.winner = {
+                    supplierId: winningBidder.supplierId,
+                    supplierName: winningBidder.supplierName,
+                    supplierPhone: winningBidder.supplierPhone,
+                    supplierEmail: winningBidder.supplierEmail,
+                    supplierAddress: winningBidder.supplierAddress,
+                    winningBid: winningBidder.bidAmount,
+                    winTime: new Date()
+                };
             }
-        );
+
+            auction.status = 'ended';
+            auction.isLive = false;
+            await auction.save();
+
+            if (auction.winner && auction.winner.supplierId) {
+                await sendNotification({
+                    io,
+                    userId: auction.winner.supplierId,
+                    userType:"supplier",
+                    title:"You Won the Auction",
+                    message:`You won ${auction.itemName} with a bid of Rs ${auction.winner.winningBid}.`,
+                    type:"vendor_auction_won",
+                    category:"auction",
+                    metadata:{
+                        auctionId: auction._id,
+                        winningBid: auction.winner.winningBid
+                    }
+                });
+            }
+
+            await sendNotification({
+                io,
+                userId: auction.vendorId,
+                userType:"vendor",
+                title:"Auction Completed",
+                message: auction.winner && auction.winner.supplierId
+                ? `${auction.itemName} ended. Winning bid: Rs ${auction.winner.winningBid}.`
+                : `${auction.itemName} ended with no bids.`,
+                type:"vendor_auction_completed",
+                category:"auction",
+                metadata:{
+                    auctionId: auction._id,
+                    winningBid: auction.winner ? auction.winner.winningBid : null
+                }
+            });
+        }
         
         // Update pending auctions that should be live
         await VendorAuction.updateMany(
@@ -827,7 +888,7 @@ router.get("/my-auctions", async (req, res) => {
         }
         
         // Update auction status before fetching
-        await updateAuctionStatus();
+        await updateAuctionStatus(req.app.get("io"));
         
         const auctions = await VendorAuction.find({ 
             vendorId: req.session.vendor.vendorId 
@@ -882,6 +943,26 @@ router.post("/start-vendor-auction", async (req, res) => {
                 basePrice: auction.basePrice
             });
         }
+
+        const participantIds =
+        [...new Set((auction.bidders || [])
+        .map(bidder=>bidder.supplierId)
+        .filter(Boolean))];
+
+        for(const supplierId of participantIds){
+            await sendNotification({
+                io,
+                userId:supplierId,
+                userType:"supplier",
+                title:"Auction Started",
+                message:`${auction.itemName} auction is now live.`,
+                type:"vendor_auction_started",
+                category:"auction",
+                metadata:{
+                    auctionId:auction._id
+                }
+            });
+        }
         
         res.json({ success: true, message: "Auction started successfully" });
     } catch (err) {
@@ -899,7 +980,7 @@ router.get("/live-vendor-auction/:auctionId", async (req, res) => {
         const { auctionId } = req.params;
         
         // Update auction status before fetching
-        await updateAuctionStatus();
+        await updateAuctionStatus(req.app.get("io"));
         
         const auction = await VendorAuction.findById(auctionId);
         
@@ -919,7 +1000,7 @@ router.get("/live-vendor-auction/:auctionId", async (req, res) => {
 // Manual endpoint to update auction status (for testing)
 router.get("/update-auction-status", async (req, res) => {
     try {
-        await updateAuctionStatus();
+        await updateAuctionStatus(req.app.get("io"));
         res.json({ success: true, message: "Auction status updated" });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
@@ -1043,6 +1124,23 @@ router.get("/accept-offer/:responseId", async (req, res) => {
         });
 
         await order.save();
+
+        const io = req.app.get("io");
+
+        await sendNotification({
+            io,
+            userId:selectedResponse.supplierId,
+            userType:"supplier",
+            title:"Deal Confirmed",
+            message:`${requirement.vendorName} accepted your offer for ${requirement.itemName}.`,
+            type:"requirement_deal_accepted",
+            category:"requirement",
+            metadata:{
+                requirementId:requirement._id,
+                responseId:selectedResponse._id,
+                orderId:order._id
+            }
+        });
 
         res.redirect("/vendor/orders");
 
@@ -1170,6 +1268,7 @@ router.post("/payment-success/:orderId", async (req, res) => {
 
     try {
 
+        const order =
         await Order.findByIdAndUpdate(
 
             req.params.orderId,
@@ -1177,8 +1276,54 @@ router.post("/payment-success/:orderId", async (req, res) => {
             {
                 paymentStatus:"paid",
                 orderStatus:"processing"
+            },
+            {
+                new:true
             }
         );
+
+        if(order){
+            const requirement =
+            await Requirement.findByIdAndUpdate(
+                order.requirementId,
+                {
+                    status:"completed"
+                },
+                {
+                    new:true
+                }
+            );
+
+            const io = req.app.get("io");
+
+            await sendNotification({
+                io,
+                userId:order.vendorId,
+                userType:"vendor",
+                title:"Requirement Closed",
+                message:`Your ${order.itemName} requirement has been finalized.`,
+                type:"requirement_closed",
+                category:"requirement",
+                metadata:{
+                    requirementId:order.requirementId,
+                    orderId:order._id
+                }
+            });
+
+            await sendNotification({
+                io,
+                userId:order.supplierId,
+                userType:"supplier",
+                title:"Requirement Closed",
+                message:`${requirement ? requirement.vendorName : order.vendorName}'s ${order.itemName} requirement has been finalized.`,
+                type:"requirement_closed",
+                category:"requirement",
+                metadata:{
+                    requirementId:order.requirementId,
+                    orderId:order._id
+                }
+            });
+        }
 
         res.json({
             success:true
@@ -1551,7 +1696,9 @@ async(req,res)=>{
         await Notification.find({
 
             userId:
-            req.session.vendor.vendorId
+            req.session.vendor.vendorId,
+
+            userType:"vendor"
 
         })
         .sort({createdAt:-1})
@@ -1564,6 +1711,39 @@ async(req,res)=>{
 
         res.status(500)
         .json([]);
+    }
+});
+router.post(
+"/notifications/read",
+
+async(req,res)=>{
+
+    try{
+
+        if(!req.session.vendor){
+
+            return res.json({success:false});
+        }
+
+        await Notification.updateMany(
+            {
+                userId:req.session.vendor.vendorId,
+                userType:"vendor",
+                isRead:false
+            },
+            {
+                $set:{
+                    isRead:true
+                }
+            }
+        );
+
+        res.json({success:true});
+
+    }catch(err){
+
+        res.status(500)
+        .json({success:false});
     }
 });
 router.get(

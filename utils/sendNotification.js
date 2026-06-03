@@ -1,5 +1,7 @@
 const Notification =
 require("../models/notification");
+const { userRoom } =
+require("./notificationRooms");
 
 const sendNotification =
 async({
@@ -8,9 +10,16 @@ async({
     userId,
     userType,
     title,
-    message
+    message,
+    type="general",
+    category="general",
+    metadata={}
 
 })=>{
+
+    if(!userId || !userType || !title || !message){
+        return null;
+    }
 
     // save in DB
 
@@ -20,16 +29,23 @@ async({
         userId,
         userType,
         title,
-        message
+        message,
+        type,
+        category,
+        metadata
     });
 
     // realtime emit
 
-    io.to(userId.toString())
-    .emit(
-        "new-notification",
-        notification
-    );
+    if(io){
+        io.to(userRoom(userType,userId))
+        .emit(
+            "new-notification",
+            notification
+        );
+    }
+
+    return notification;
 };
 
 module.exports =

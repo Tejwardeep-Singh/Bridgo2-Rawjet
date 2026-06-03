@@ -310,6 +310,7 @@ setTimeout(()=>{
        
 
 let initialLoadComplete = false;
+const pendingSocketNotifications = [];
 const socket = io();
 function formatTime(date){
 
@@ -360,20 +361,18 @@ function addNotificationToUI(
 
 ){
 
-    const notificationKey =
+    if(!data || !data._id){
+        return;
+    }
 
-`${data.title}-${data.message}-${data.createdAt}`;
+    if(renderedNotifications.has(data._id)){
+        return;
+    }
 
-
-if(renderedNotifications.has(notificationKey)){
-
-    return;
-}
-
-renderedNotifications.add(notificationKey); 
+renderedNotifications.add(data._id); 
     // UPDATE COUNT
 
-    if(increaseCount){
+    if(increaseCount && !data.isRead){
 
         unreadCount++;
 
@@ -478,10 +477,17 @@ renderedNotifications.add(notificationKey);
 
 
     liveStack.prepend(card);
+
+    while(liveStack.children.length > 20){
+        liveStack.removeChild(liveStack.lastElementChild);
+    }
 }
 socket.emit(
   "joinUserRoom",
-  "<%= supplier.supplierId%>"
+  {
+    userType:"supplier",
+    userId:"<%= supplier.supplierId%>"
+  }
 );
 
 const notificationBtn =
@@ -513,11 +519,23 @@ notificationBtn.addEventListener(
 
     "click",
 
-    ()=>{
+    async()=>{
 
         notificationPanel
         .classList
         .toggle("active");
+
+        if(notificationPanel.classList.contains("active")){
+            await fetch(
+                "/supplier/notifications/read",
+                {
+                    method:"POST",
+                    headers:{
+                        "Content-Type":"application/json"
+                    }
+                }
+            );
+        }
 
         unreadCount = 0;
 
@@ -535,6 +553,9 @@ socket.on(
         if(initialLoadComplete){
 
             addNotificationToUI(data);
+        }else{
+
+            pendingSocketNotifications.push(data);
         }
     }
 );
@@ -551,6 +572,12 @@ loadNotifications(){
         const notifications =
         await response.json();
 
+        unreadCount =
+        notifications.filter(notification=>!notification.isRead).length;
+
+        notificationCount.textContent =
+        unreadCount;
+
 
         notifications.reverse()
         .forEach(data=>{
@@ -564,9 +591,15 @@ loadNotifications(){
         });
         initialLoadComplete = true;
 
+        pendingSocketNotifications.splice(0)
+        .forEach(data=>addNotificationToUI(data));
+
     }catch(err){
 
         console.log(err);
+        initialLoadComplete = true;
+        pendingSocketNotifications.splice(0)
+        .forEach(data=>addNotificationToUI(data));
     }
 }
 loadNotifications();

@@ -1,3 +1,6 @@
+const { userRoom } =
+require("../utils/notificationRooms");
+
 module.exports = (io) => {
 
   io.on("connection", (socket) => {
@@ -11,12 +14,21 @@ module.exports = (io) => {
 
     socket.on(
       "joinUserRoom",
-      (userId) => {
+      (payload) => {
 
-        socket.join(userId);
+        const room =
+        typeof payload === "object"
+        ? userRoom(payload.userType,payload.userId)
+        : null;
+
+        if(!room){
+          return;
+        }
+
+        socket.join(room);
 
         console.log(
-          `User joined room: ${userId}`
+          `User joined room: ${room}`
         );
       }
     );

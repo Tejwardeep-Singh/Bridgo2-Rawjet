@@ -70,6 +70,15 @@ const stockSchema = new mongoose.Schema({
         type: String,
         enum: ['pending', 'live', 'ended', 'sold'],
         default: 'pending'
+    },
+    winner: {
+        vendorId: String,
+        vendorName: String,
+        vendorPhone: String,
+        vendorEmail: String,
+        vendorAddress: String,
+        winningBid: Number,
+        winTime: Date
     }
 }, {
     timestamps: true

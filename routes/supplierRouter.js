@@ -274,7 +274,16 @@ for(const vendor of nearbyVendors){
 
         message:
         `${name} auction
-        is scheduled nearby.`
+        is scheduled nearby.`,
+
+        type:"supplier_auction_created",
+
+        category:"auction",
+
+        metadata:{
+            auctionId:newStock._id,
+            itemName:name
+        }
     });
 }
         res.redirect("/supplier/auction/auctionsView");
@@ -347,6 +356,26 @@ router.post("/startAuction", async (req, res) => {
             });
         }
 
+        const participantIds =
+        [...new Set((auction.bidders || [])
+        .map(bidder=>bidder.vendorId)
+        .filter(Boolean))];
+
+        for(const vendorId of participantIds){
+            await sendNotification({
+                io:req.app.get("io"),
+                userId:vendorId,
+                userType:"vendor",
+                title:"Auction Started",
+                message:`${auction.name} auction is now live.`,
+                type:"supplier_auction_started",
+                category:"auction",
+                metadata:{
+                    auctionId:auction._id
+                }
+            });
+        }
+
         // Redirect back to auctions view
         res.redirect("/supplier/auction/auctionsView");
     } catch (err) {
@@ -406,12 +435,18 @@ router.post("/place-bid", async (req, res) => {
             return res.status(403).json({ error: "You cannot bid on your own auction" });
         }
         
-        if (bidAmount <= auction.currentBid) {
+        const parsedBidAmount = parseFloat(bidAmount);
+        const previousHighestBidder =
+        auction.bidders && auction.bidders.length
+        ? [...auction.bidders].sort((a,b)=>b.bidAmount - a.bidAmount)[0]
+        : null;
+
+        if (parsedBidAmount <= auction.currentBid) {
             return res.status(400).json({ error: "Bid must be higher than current bid" });
         }
         
         // Update auction with new bid
-        auction.currentBid = bidAmount;
+        auction.currentBid = parsedBidAmount;
         auction.currentBidder = vendorName;
         
 
@@ -422,7 +457,7 @@ router.post("/place-bid", async (req, res) => {
             vendorPhone: vendorPhone || 'N/A',
             vendorEmail: vendorEmail || 'N/A',
             vendorAddress: vendorAddress || 'N/A',
-            bidAmount,
+            bidAmount: parsedBidAmount,
             bidTime: new Date()
         });
         
@@ -435,18 +470,54 @@ router.post("/place-bid", async (req, res) => {
                 auctionId,
                 vendorId,
                 vendorName,
-                bidAmount,
+                bidAmount: parsedBidAmount,
                 timestamp: new Date()
+            });
+        }
+
+        await sendNotification({
+            io,
+            userId: auction.supplierId,
+            userType:"supplier",
+            title:"New Bid Received",
+            message:`${vendorName} placed a bid of Rs ${parsedBidAmount} on ${auction.name}.`,
+            type:"supplier_auction_new_bid",
+            category:"auction",
+            metadata:{
+                auctionId: auction._id,
+                bidAmount: parsedBidAmount,
+                bidderId: vendorId
+            }
+        });
+
+        if(
+            previousHighestBidder &&
+            previousHighestBidder.vendorId &&
+            previousHighestBidder.vendorId !== vendorId
+        ){
+            await sendNotification({
+                io,
+                userId: previousHighestBidder.vendorId,
+                userType:"vendor",
+                title:"Your Bid Was Surpassed",
+                message:`Another vendor placed a higher bid on ${auction.name}.`,
+                type:"supplier_auction_outbid",
+                category:"auction",
+                metadata:{
+                    auctionId: auction._id,
+                    previousBid: previousHighestBidder.bidAmount,
+                    currentBid: parsedBidAmount
+                }
             });
         }
         
         
-        res.json({ success: true, currentBid: bidAmount });
+        res.json({ success: true, currentBid: parsedBidAmount });
     } catch (err) {
         res.status(500).json({ error: "Error placing bid: " + err.message });
     }
 });
-async function updateStockAuctionStatus(){
+async function updateStockAuctionStatus(io){
 
     try{
 
@@ -468,10 +539,58 @@ async function updateStockAuctionStatus(){
 
             auction.status = "ended";
 
-            // OPTIONAL:
-            // set winner here
+            const winningBidder =
+            auction.bidders && auction.bidders.length
+            ? [...auction.bidders].sort((a,b)=>b.bidAmount - a.bidAmount)[0]
+            : null;
+
+            if(winningBidder && !auction.winner?.vendorId){
+                auction.winner = {
+                    vendorId: winningBidder.vendorId,
+                    vendorName: winningBidder.vendorName,
+                    vendorPhone: winningBidder.vendorPhone,
+                    vendorEmail: winningBidder.vendorEmail,
+                    vendorAddress: winningBidder.vendorAddress,
+                    winningBid: winningBidder.bidAmount,
+                    winTime: new Date()
+                };
+            }
 
             await auction.save();
+
+            if(winningBidder){
+                await sendNotification({
+                    io,
+                    userId: winningBidder.vendorId,
+                    userType:"vendor",
+                    title:"You Won the Auction",
+                    message:`You won ${auction.name} with a bid of Rs ${winningBidder.bidAmount}.`,
+                    type:"supplier_auction_won",
+                    category:"auction",
+                    metadata:{
+                        auctionId: auction._id,
+                        winningBid: winningBidder.bidAmount
+                    }
+                });
+            }
+
+            if(auction.supplierId){
+                await sendNotification({
+                    io,
+                    userId: auction.supplierId,
+                    userType:"supplier",
+                    title:"Auction Completed",
+                    message: winningBidder
+                    ? `${auction.name} ended. Winning bid: Rs ${winningBidder.bidAmount}.`
+                    : `${auction.name} ended with no bids.`,
+                    type:"supplier_auction_completed",
+                    category:"auction",
+                    metadata:{
+                        auctionId: auction._id,
+                        winningBid: winningBidder ? winningBidder.bidAmount : null
+                    }
+                });
+            }
         }
 
     }catch(err){
@@ -484,7 +603,7 @@ async function updateStockAuctionStatus(){
 }
 router.get("/auction/auctionsView", async (req, res) => {
     try {
-        await updateStockAuctionStatus();
+        await updateStockAuctionStatus(req.app.get("io"));
         if (!req.session.supplier) {
             return res.redirect("/supplier");
         }
@@ -768,7 +887,16 @@ await sendNotification({
     `${req.session.supplier.name}
     responded to your
     ${requirement.itemName}
-    requirement`
+    requirement`,
+
+    type:"supplier_response",
+
+    category:"requirement",
+
+    metadata:{
+        requirementId:requirement._id,
+        supplierId:req.session.supplier.supplierId
+    }
 });
         
         // Set session-based flash message
@@ -782,7 +910,7 @@ await sendNotification({
 // ========== SUPPLIER VENDOR AUCTION ROUTES ==========
 
 // Function to update vendor auction status based on time
-async function updateVendorAuctionStatus() {
+async function updateVendorAuctionStatus(io) {
     try {
         const now = new Date();
         // Update live auctions that have ended
@@ -808,6 +936,38 @@ async function updateVendorAuctionStatus() {
             auction.status = 'ended';
             auction.isLive = false;
             await auction.save();
+
+            if (auction.winner && auction.winner.supplierId) {
+                await sendNotification({
+                    io,
+                    userId: auction.winner.supplierId,
+                    userType:"supplier",
+                    title:"You Won the Auction",
+                    message:`You won ${auction.itemName} with a bid of Rs ${auction.winner.winningBid}.`,
+                    type:"vendor_auction_won",
+                    category:"auction",
+                    metadata:{
+                        auctionId: auction._id,
+                        winningBid: auction.winner.winningBid
+                    }
+                });
+            }
+
+            await sendNotification({
+                io,
+                userId: auction.vendorId,
+                userType:"vendor",
+                title:"Auction Completed",
+                message: auction.winner && auction.winner.supplierId
+                ? `${auction.itemName} ended. Winning bid: Rs ${auction.winner.winningBid}.`
+                : `${auction.itemName} ended with no bids.`,
+                type:"vendor_auction_completed",
+                category:"auction",
+                metadata:{
+                    auctionId: auction._id,
+                    winningBid: auction.winner ? auction.winner.winningBid : null
+                }
+            });
         }
         // Update pending auctions that should be live
         await VendorAuction.updateMany(
@@ -835,7 +995,7 @@ router.get("/vendor-auctions", async (req, res) => {
             return res.redirect("/supplier/login");
         }
         // Update auction status before fetching
-        await updateVendorAuctionStatus();
+        await updateVendorAuctionStatus(req.app.get("io"));
 
         // Fetch both live and ended auctions for the supplier
         const auctions = await VendorAuction.find({
@@ -879,7 +1039,7 @@ router.get("/vendor-auction/:auctionId", async (req, res) => {
         const { auctionId } = req.params;
         
         // Update auction status before fetching
-        await updateVendorAuctionStatus();
+        await updateVendorAuctionStatus(req.app.get("io"));
         
         const auction = await VendorAuction.findById(auctionId);
         
@@ -919,8 +1079,13 @@ router.post("/place-vendor-bid", async (req, res) => {
         
         // Validate bid amount (must be lower than current lowest bid or base price)
         const currentLowest = auction.currentLowestBid || auction.basePrice;
+        const parsedBidAmount = parseFloat(bidAmount);
+        const previousLowestBidder =
+        auction.bidders && auction.bidders.length
+        ? [...auction.bidders].sort((a,b)=>a.bidAmount - b.bidAmount)[0]
+        : null;
         
-        if (parseFloat(bidAmount) >= currentLowest) {
+        if (parsedBidAmount >= currentLowest) {
             return res.status(400).json({ 
                 success: false, 
                 error: "Your bid must be lower than the current lowest bid" 
@@ -943,12 +1108,12 @@ router.post("/place-vendor-bid", async (req, res) => {
             supplierEmail: req.session.supplier.email,
             supplierAddress: supplierAddress || 'Address not provided',
             supplierCity: req.session.supplier.city,
-            bidAmount: parseFloat(bidAmount),
+            bidAmount: parsedBidAmount,
             bidTime: new Date()
         });
         
         // Update current lowest bid
-        auction.currentLowestBid = parseFloat(bidAmount);
+        auction.currentLowestBid = parsedBidAmount;
         auction.currentLowestBidder = req.session.supplier.name;
         
         await auction.save();
@@ -959,8 +1124,44 @@ router.post("/place-vendor-bid", async (req, res) => {
             io.emit('vendorAuctionBid', {
                 auctionId: auction._id,
                 supplierName: req.session.supplier.name,
-                bidAmount: parseFloat(bidAmount),
-                currentLowestBid: parseFloat(bidAmount)
+                bidAmount: parsedBidAmount,
+                currentLowestBid: parsedBidAmount
+            });
+        }
+
+        await sendNotification({
+            io,
+            userId: auction.vendorId,
+            userType:"vendor",
+            title:"New Bid Received",
+            message:`${req.session.supplier.name} placed a bid of Rs ${parsedBidAmount} on ${auction.itemName}.`,
+            type:"vendor_auction_new_bid",
+            category:"auction",
+            metadata:{
+                auctionId: auction._id,
+                bidAmount: parsedBidAmount,
+                bidderId: req.session.supplier.supplierId
+            }
+        });
+
+        if(
+            previousLowestBidder &&
+            previousLowestBidder.supplierId &&
+            previousLowestBidder.supplierId !== req.session.supplier.supplierId
+        ){
+            await sendNotification({
+                io,
+                userId: previousLowestBidder.supplierId,
+                userType:"supplier",
+                title:"Your Bid Was Surpassed",
+                message:`Another supplier placed a lower bid on ${auction.itemName}.`,
+                type:"vendor_auction_outbid",
+                category:"auction",
+                metadata:{
+                    auctionId: auction._id,
+                    previousBid: previousLowestBidder.bidAmount,
+                    currentBid: parsedBidAmount
+                }
             });
         }
         
@@ -1326,7 +1527,9 @@ async(req,res)=>{
         await Notification.find({
 
             userId:
-            req.session.supplier.supplierId
+            req.session.supplier.supplierId,
+
+            userType:"supplier"
 
         })
         .sort({createdAt:-1})
@@ -1339,6 +1542,39 @@ async(req,res)=>{
 
         res.status(500)
         .json([]);
+    }
+});
+router.post(
+"/notifications/read",
+
+async(req,res)=>{
+
+    try{
+
+        if(!req.session.supplier){
+
+            return res.json({success:false});
+        }
+
+        await Notification.updateMany(
+            {
+                userId:req.session.supplier.supplierId,
+                userType:"supplier",
+                isRead:false
+            },
+            {
+                $set:{
+                    isRead:true
+                }
+            }
+        );
+
+        res.json({success:true});
+
+    }catch(err){
+
+        res.status(500)
+        .json({success:false});
     }
 });
 module.exports = router;
