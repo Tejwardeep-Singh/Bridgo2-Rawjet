@@ -336,8 +336,6 @@ All Rights Reserved By Tejwardeep Singh.
 
 ## Tejwardeep Singh
 
-B.Tech CSE (2024–2028)
-
 * Full Stack Developer
 * Real-Time Systems Enthusiast
 * Building scalable marketplace systems
