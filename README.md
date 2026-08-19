@@ -336,9 +336,7 @@ All Rights Reserved By Tejwardeep Singh.
 
 ## Tejwardeep Singh
 
-* Full Stack Developer
-* Real-Time Systems Enthusiast
-* Building scalable marketplace systems
+
 
 ---
 
