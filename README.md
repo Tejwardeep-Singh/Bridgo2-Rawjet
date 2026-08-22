@@ -335,9 +335,7 @@ All Rights Reserved By Tejwardeep Singh.
 # 👨‍💻 Author
 
 ## Tejwardeep Singh
-
-
-
+Contact: tejwardeep@gmail.com
 ---
 
 <p align="center">
